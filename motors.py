@@ -1,74 +1,48 @@
-import RPi.GPIO as GPIO
+# /// script
+# dependencies = [
+#   "gpiozero",
+#   "lgpio",
+# ]
+# ///
 
-# Definícia globálnych premenných pre piny
-L_IN1 = 23
-L_IN2 = 24
+from gpiozero import Robot
+import logging
 
-R_IN3 = 27
-R_IN4 = 22
+# Logovanie
+logger = logging.getLogger(__name__)
+
+# Definícia pinov (BCM)
+L_IN1, L_IN2 = 23, 24
+R_IN3, R_IN4 = 27, 22
+
+# Inicializácia robota
+# Používame gpiozero, ktorá automaticky rieši cleanup a optimalizáciu na RPi 4
+robot = None
 
 def initialize_motors():
-    """
-    Inicializuje GPIO piny
-    """
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setwarnings(False)
-
-    GPIO.setup(L_IN1, GPIO.OUT)
-    GPIO.setup(L_IN2, GPIO.OUT)
-
-    GPIO.setup(R_IN3, GPIO.OUT)
-    GPIO.setup(R_IN4, GPIO.OUT)
+    global robot
+    try:
+        robot = Robot(left=(L_IN1, L_IN2), right=(R_IN3, R_IN4))
+        logger.info("Motory inicializované cez gpiozero.")
+    except Exception as e:
+        logger.error(f"Chyba pri inicializácii motorov: {e}")
 
 def forward():
-    """
-    Spustí motory dopredu
-    """
-    GPIO.output(L_IN1, GPIO.HIGH)
-    GPIO.output(L_IN2, GPIO.LOW)
-    GPIO.output(R_IN3, GPIO.LOW)
-    GPIO.output(R_IN4, GPIO.HIGH)
+    if robot: robot.forward()
 
 def backward():
-    """
-    Spustí motory dozadu
-    """
-    GPIO.output(L_IN1, GPIO.LOW)
-    GPIO.output(L_IN2, GPIO.HIGH)
-    GPIO.output(R_IN3, GPIO.HIGH)
-    GPIO.output(R_IN4, GPIO.LOW)
+    if robot: robot.backward()
 
 def left():
-    """
-    Otočí robota doľava.
-    """
-    GPIO.output(L_IN1, GPIO.LOW)  # Ľavý motor dozadu
-    GPIO.output(L_IN2, GPIO.HIGH)
-    GPIO.output(R_IN3, GPIO.LOW)  # Pravý motor dopredu
-    GPIO.output(R_IN4, GPIO.HIGH)
+    if robot: robot.left()
 
 def right():
-    """
-    Otočí robota doprava.
-    """
-    GPIO.output(L_IN1, GPIO.HIGH)  # Ľavý motor dopredu
-    GPIO.output(L_IN2, GPIO.LOW)
-    GPIO.output(R_IN3, GPIO.HIGH)  # Pravý motor dozadu
-    GPIO.output(R_IN4, GPIO.LOW)
+    if robot: robot.right()
 
 def stop():
-    """
-    Zastaví motory.
-    """
-    GPIO.output(L_IN1, GPIO.LOW)
-    GPIO.output(L_IN2, GPIO.LOW)
-    GPIO.output(R_IN3, GPIO.LOW)
-    GPIO.output(R_IN4, GPIO.LOW)
+    if robot: robot.stop()
 
 def cleanup():
-    """
-    Uvoľní všetky GPIO piny.
-    """
-    GPIO.cleanup()
-
-
+    if robot:
+        robot.stop()
+        robot.close()

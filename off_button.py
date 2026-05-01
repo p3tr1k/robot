@@ -1,19 +1,30 @@
-import RPi.GPIO as GPIO
+# /// script
+# dependencies = [
+#   "gpiozero",
+#   "lgpio",
+# ]
+# ///
+
+from gpiozero import Button
 import os
-import time
+from signal import pause
+import logging
 
-BUTTON_PIN = 18  # GPIO pin, kam je pripojené tlačidlo
+logger = logging.getLogger(__name__)
 
-# Nastavenie GPIO
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+BUTTON_PIN = 18
+
+def shutdown():
+    logger.warning("Tlačidlo stlačené! Vypínam systém...")
+    os.system("sudo shutdown -h now")
 
 try:
-    while True:
-        button_state = GPIO.input(BUTTON_PIN)
-        if button_state == GPIO.LOW:  # Tlačidlo stlačené
-            #print("Vypínam systém...")
-            os.system("sudo shutdown -h now")
-            time.sleep(1)  # Zamedzenie opakovaného stlačenia
-except KeyboardInterrupt:
-    GPIO.cleanup()
+    # pull_up=True je predvolené pre Button
+    button = Button(BUTTON_PIN)
+    button.when_pressed = shutdown
+    
+    logger.info(f"Monitor vypínacieho tlačidla spustený na pine {BUTTON_PIN}")
+    # pause() zabráni ukončeniu skriptu a nezaťažuje CPU
+    pause()
+except Exception as e:
+    logger.error(f"Chyba v off_button skripte: {e}")
