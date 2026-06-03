@@ -33,15 +33,29 @@ if kit:
     kit.servo[ARM3_CHANNEL].set_pulse_width_range(500, 2550)
     kit.servo[GRIP_CHANNEL].set_pulse_width_range(600, 1900)
 
+# Bezpečné limity pre MG996R (prevencia bzučania a mechanického namáhania)
+SAFE_MIN = 5
+SAFE_MAX = 175
+
+# Predvolené (stredové) uhly - upravené podľa tvojej kalibrácie
 default_angles = {
-    ROTATE_CHANNEL: 90, ARM1_CHANNEL: 180, ARM2_CHANNEL: 0,
-    ARM3_CHANNEL: 180, GRIP_CHANNEL: 90, PAN_CHANNEL: 90, TILT_CHANNEL: 90
+    ROTATE_CHANNEL: 100,  # Tvoj "rovno" stred
+    ARM1_CHANNEL: 180,
+    ARM2_CHANNEL: 0,
+    ARM3_CHANNEL: 180,
+    GRIP_CHANNEL: 90,
+    PAN_CHANNEL: 90,
+    TILT_CHANNEL: 90
 }
 
 def move_servo(channel, angle):
+    """
+    Nastaví servo na uhol s automatickým strážením bezpečných limitov.
+    """
     if kit:
-        angle = max(0, min(180, angle))
-        kit.servo[channel].angle = angle
+        # Aplikujeme bezpečné limity 5 - 175
+        safe_angle = max(SAFE_MIN, min(SAFE_MAX, angle))
+        kit.servo[channel].angle = safe_angle
 
 def initialize_arm():
     if not kit: return
