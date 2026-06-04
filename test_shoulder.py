@@ -1,6 +1,7 @@
 # /// script
 # dependencies = [
 #   "adafruit-circuitpython-servokit",
+#   "RPi.GPIO",
 # ]
 # ///
 
