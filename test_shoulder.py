@@ -1,3 +1,9 @@
+# /// script
+# dependencies = [
+#   "adafruit-circuitpython-servokit",
+# ]
+# ///
+
 from adafruit_servokit import ServoKit
 import time
 
