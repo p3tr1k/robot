@@ -1,10 +1,3 @@
-# /// script
-# dependencies = [
-#   "flask",
-#   "adafruit-circuitpython-servokit",
-# ]
-# ///
-
 from flask import Flask, Response, render_template, jsonify
 try:
     from picamera2 import Picamera2
