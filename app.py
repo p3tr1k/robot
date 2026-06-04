@@ -10,7 +10,13 @@
 # ///
 
 from flask import Flask, Response, render_template, jsonify
-from picamera2 import Picamera2
+try:
+    from picamera2 import Picamera2
+    HAS_PICAMERA = True
+except ImportError:
+    HAS_PICAMERA = False
+    print("Picamera2 nie je k dispozícii (ImportError).")
+
 import cv2
 import threading
 import logging
@@ -31,18 +37,19 @@ frame_lock = threading.Lock()
 latest_frame = None
 
 # Inicializácia kamery s hardvérovou rotáciou (vflip=True, hflip=True == 180°)
-try:
-    picam2 = Picamera2()
-    config = picam2.create_video_configuration(main={"size": (640, 480)})
-    picam2.configure(config)
-    # Na niektorých verziách picamera2 sa transformácia nastavuje v konfigurácii, 
-    # v iných cez picam2.set_property('Rotation', 180). 
-    # Použijeme najkompatibilnejšiu metódu pre Trixie:
-    picam2.start()
-    logger.info("Kamera úspešne spustená.")
-except Exception as e:
-    logger.error(f"Zlyhanie kamery: {e}")
-    picam2 = None
+picam2 = None
+if HAS_PICAMERA:
+    try:
+        picam2 = Picamera2()
+        config = picam2.create_video_configuration(main={"size": (640, 480)})
+        picam2.configure(config)
+        picam2.start()
+        logger.info("Kamera úspešne spustená.")
+    except Exception as e:
+        logger.error(f"Zlyhanie kamery: {e}")
+        picam2 = None
+else:
+    logger.warning("Spúšťam bez kamery (picamera2 chýba).")
 
 # Inicializácia hardvéru
 motors.initialize_motors()
