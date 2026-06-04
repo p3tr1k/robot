@@ -98,19 +98,35 @@ STEP = 1
 
 def rotate_left():
     curr = current_angles.get(ROTATE_CHANNEL, 90)
-    move_servo(ROTATE_CHANNEL, curr + STEP)
+    move_servo(ROTATE_CHANNEL, curr - STEP) # Invertované
 
 def rotate_right():
     curr = current_angles.get(ROTATE_CHANNEL, 90)
-    move_servo(ROTATE_CHANNEL, curr - STEP)
+    move_servo(ROTATE_CHANNEL, curr + STEP) # Invertované
 
 def arm_up():
     curr_shoulder = current_angles.get(SHOULDER_A, 170)
-    move_shoulder(curr_shoulder - STEP)
+    move_shoulder(curr_shoulder + STEP) # Invertované (hore ide uhol nahor)
+    
+    # Pridanie pohybu lakťa (inverzne k ramenu pre udržanie roviny)
+    curr_elbow = current_angles.get(ELBOW_CHANNEL, 180)
+    move_servo(ELBOW_CHANNEL, curr_elbow - STEP) # Invertovaný pohyb voči ramenu
 
 def arm_down():
     curr_shoulder = current_angles.get(SHOULDER_A, 170)
-    move_shoulder(curr_shoulder + STEP)
+    move_shoulder(curr_shoulder - STEP) # Invertované
+    
+    # Pridanie pohybu lakťa (inverzne k ramenu pre udržanie roviny)
+    curr_elbow = current_angles.get(ELBOW_CHANNEL, 180)
+    move_servo(ELBOW_CHANNEL, curr_elbow + STEP) # Invertovaný pohyb voči ramenu
+
+def elbow_up():
+    curr = current_angles.get(ELBOW_CHANNEL, 180)
+    move_servo(ELBOW_CHANNEL, curr + STEP)
+
+def elbow_down():
+    curr = current_angles.get(ELBOW_CHANNEL, 180)
+    move_servo(ELBOW_CHANNEL, curr - STEP)
 
 def grip_open():
     curr = current_angles.get(GRIP_CHANNEL, 90)
