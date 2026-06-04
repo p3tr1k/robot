@@ -2,9 +2,7 @@
 # dependencies = [
 #   "flask",
 #   "opencv-python",
-#   "gpiozero",
 #   "adafruit-circuitpython-servokit",
-#   "lgpio",
 # ]
 # ///
 
