@@ -31,16 +31,23 @@
                 .catch(error => console.error('Error:', error));
         }
 
-        function startAction(action) {
+        function startAction(action, event) {
+            if (event && event.cancelable) event.preventDefault(); // Zabraňuje zdvojeniu touch/mouse eventov
+            if (activeButton) {
+                clearInterval(activeButton);
+            }
+            // Pošleme príkaz okamžite a potom opakujeme
+            sendCommand(action);
             activeButton = setInterval(() => sendCommand(action), 50);
         }
 
-        function stopAction() {
+        function stopAction(event) {
+            if (event && event.cancelable) event.preventDefault();
             if (activeButton) {
                 clearInterval(activeButton);
                 activeButton = null;
-                sendCommand('stop');
             }
+            sendCommand('stop');
         }
 
         function releaseServos() {
@@ -64,31 +71,31 @@
     <img src="/video_feed" width="640" height="480" alt="Video Feed" />
 
     <h2>Motors</h2>
-    <button onmousedown="startAction('forward')" onmouseup="stopAction()" ontouchstart="startAction('forward')" ontouchend="stopAction()">Forward</button>
+    <button onmousedown="startAction('forward', event)" onmouseup="stopAction(event)" ontouchstart="startAction('forward', event)" ontouchend="stopAction(event)">Forward</button>
     <br>
-    <button onmousedown="startAction('left')" onmouseup="stopAction()" ontouchstart="startAction('left')" ontouchend="stopAction()">Left</button>
-    <button onmousedown="startAction('right')" onmouseup="stopAction()" ontouchstart="startAction('right')" ontouchend="stopAction()">Right</button>
+    <button onmousedown="startAction('left', event)" onmouseup="stopAction(event)" ontouchstart="startAction('left', event)" ontouchend="stopAction(event)">Left</button>
+    <button onmousedown="startAction('right', event)" onmouseup="stopAction(event)" ontouchstart="startAction('right', event)" ontouchend="stopAction(event)">Right</button>
     <br>
-    <button onmousedown="startAction('backward')" onmouseup="stopAction()" ontouchstart="startAction('backward')" ontouchend="stopAction()">Backward</button>
+    <button onmousedown="startAction('backward', event)" onmouseup="stopAction(event)" ontouchstart="startAction('backward', event)" ontouchend="stopAction(event)">Backward</button>
 
     <h2>Arm</h2>
-    <button onmousedown="startAction('rotate_left')" onmouseup="stopAction()" ontouchstart="startAction('rotate_left')" ontouchend="stopAction()">Rotate Left</button>
-    <button onmousedown="startAction('rotate_right')" onmouseup="stopAction()" ontouchstart="startAction('rotate_right')" ontouchend="stopAction()">Rotate Right</button>
+    <button onmousedown="startAction('rotate_left', event)" onmouseup="stopAction(event)" ontouchstart="startAction('rotate_left', event)" ontouchend="stopAction(event)">Rotate Left</button>
+    <button onmousedown="startAction('rotate_right', event)" onmouseup="stopAction(event)" ontouchstart="startAction('rotate_right', event)" ontouchend="stopAction(event)">Rotate Right</button>
     <br>
-    <button onmousedown="startAction('arm_up')" onmouseup="stopAction()" ontouchstart="startAction('arm_up')" ontouchend="stopAction()">Arm Up</button>
-    <button onmousedown="startAction('arm_down')" onmouseup="stopAction()" ontouchstart="startAction('arm_down')" ontouchend="stopAction()">Arm Down</button>
+    <button onmousedown="startAction('arm_up', event)" onmouseup="stopAction(event)" ontouchstart="startAction('arm_up', event)" ontouchend="stopAction(event)">Arm Up</button>
+    <button onmousedown="startAction('arm_down', event)" onmouseup="stopAction(event)" ontouchstart="startAction('arm_down', event)" ontouchend="stopAction(event)">Arm Down</button>
     <br>
-    <button onmousedown="startAction('grip_close')" onmouseup="stopAction()" ontouchstart="startAction('grip_close')" ontouchend="stopAction()">Grip Close</button>
-    <button onmousedown="startAction('grip_open')" onmouseup="stopAction()" ontouchstart="startAction('grip_open')" ontouchend="stopAction()">Grip Open</button>
+    <button onmousedown="startAction('grip_close', event)" onmouseup="stopAction(event)" ontouchstart="startAction('grip_close', event)" ontouchend="stopAction(event)">Grip Close</button>
+    <button onmousedown="startAction('grip_open', event)" onmouseup="stopAction(event)" ontouchstart="startAction('grip_open', event)" ontouchend="stopAction(event)">Grip Open</button>
     <br>
     <button onclick="releaseServos()">Release Servos</button>
 
     <h2>Camera</h2>
-    <button onmousedown="startAction('cam_up')" onmouseup="stopAction()" ontouchstart="startAction('cam_up')" ontouchend="stopAction()">Camera Up</button>
-    <button onmousedown="startAction('cam_down')" onmouseup="stopAction()" ontouchstart="startAction('cam_down')" ontouchend="stopAction()">Camera Down</button>
+    <button onmousedown="startAction('cam_up', event)" onmouseup="stopAction(event)" ontouchstart="startAction('cam_up', event)" ontouchend="stopAction(event)">Camera Up</button>
+    <button onmousedown="startAction('cam_down', event)" onmouseup="stopAction(event)" ontouchstart="startAction('cam_down', event)" ontouchend="stopAction(event)">Camera Down</button>
     <br>
-    <button onmousedown="startAction('cam_left')" onmouseup="stopAction()" ontouchstart="startAction('cam_left')" ontouchend="stopAction()">Camera Left</button>
-    <button onmousedown="startAction('cam_right')" onmouseup="stopAction()" ontouchstart="startAction('cam_right')" ontouchend="stopAction()">Camera Right</button>
+    <button onmousedown="startAction('cam_left', event)" onmouseup="stopAction(event)" ontouchstart="startAction('cam_left', event)" ontouchend="stopAction(event)">Camera Left</button>
+    <button onmousedown="startAction('cam_right', event)" onmouseup="stopAction(event)" ontouchstart="startAction('cam_right', event)" ontouchend="stopAction(event)">Camera Right</button>
 </body>
 </html>
 
