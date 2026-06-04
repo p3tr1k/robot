@@ -1,7 +1,6 @@
 # /// script
 # dependencies = [
 #   "flask",
-#   "picamera2",
 #   "opencv-python",
 #   "gpiozero",
 #   "adafruit-circuitpython-servokit",
