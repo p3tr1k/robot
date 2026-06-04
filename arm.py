@@ -124,5 +124,26 @@ def cam_down():
     curr = current_angles.get(TILT_CHANNEL, 90)
     move_servo(TILT_CHANNEL, curr + STEP)
 
+def park_arm():
+    """
+    Pomaly zaparkuje rameno do oddychovej polohy (170°) pred vypnutím.
+    """
+    import time
+    logger.info("Parkujem rameno do oddychovej polohy...")
+    curr_shoulder = current_angles.get(SHOULDER_A, 170)
+    target = 170
+    
+    if curr_shoulder < target:
+        for angle in range(int(curr_shoulder), target + 1, 1):
+            move_shoulder(angle)
+            time.sleep(0.02) # Pomalý pohyb
+    elif curr_shoulder > target:
+        for angle in range(int(curr_shoulder), target - 1, -1):
+            move_shoulder(angle)
+            time.sleep(0.02)
+            
+    logger.info("Rameno zaparkované.")
+
 def cleanup():
+    park_arm()
     release_servos()
