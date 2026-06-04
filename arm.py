@@ -110,7 +110,7 @@ def arm_up():
     
     # Pridanie pohybu lakťa (inverzne k ramenu pre udržanie roviny)
     curr_elbow = current_angles.get(ELBOW_CHANNEL, 180)
-    move_servo(ELBOW_CHANNEL, curr_elbow - STEP) # Invertovaný pohyb voči ramenu
+    move_servo(ELBOW_CHANNEL, curr_elbow + STEP) # Opravená inverzia lakťa
 
 def arm_down():
     curr_shoulder = current_angles.get(SHOULDER_A, 170)
@@ -118,15 +118,15 @@ def arm_down():
     
     # Pridanie pohybu lakťa (inverzne k ramenu pre udržanie roviny)
     curr_elbow = current_angles.get(ELBOW_CHANNEL, 180)
-    move_servo(ELBOW_CHANNEL, curr_elbow + STEP) # Invertovaný pohyb voči ramenu
+    move_servo(ELBOW_CHANNEL, curr_elbow - STEP) # Opravená inverzia lakťa
 
 def elbow_up():
     curr = current_angles.get(ELBOW_CHANNEL, 180)
-    move_servo(ELBOW_CHANNEL, curr + STEP)
+    move_servo(ELBOW_CHANNEL, curr - STEP) # Invertované
 
 def elbow_down():
     curr = current_angles.get(ELBOW_CHANNEL, 180)
-    move_servo(ELBOW_CHANNEL, curr - STEP)
+    move_servo(ELBOW_CHANNEL, curr + STEP) # Invertované
 
 def grip_open():
     curr = current_angles.get(GRIP_CHANNEL, 90)
