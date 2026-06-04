@@ -1,7 +1,6 @@
 # /// script
 # dependencies = [
 #   "flask",
-#   "opencv-python",
 #   "adafruit-circuitpython-servokit",
 # ]
 # ///
@@ -12,9 +11,15 @@ try:
     HAS_PICAMERA = True
 except ImportError:
     HAS_PICAMERA = False
-    print("Picamera2 nie je k dispozícii (ImportError).")
+    print("Picamera2 nie je k dispozícii.")
 
-import cv2
+try:
+    import cv2
+    HAS_CV2 = True
+except ImportError:
+    HAS_CV2 = False
+    print("OpenCV (cv2) nie je k dispozícii.")
+
 import threading
 import logging
 import time
@@ -33,9 +38,9 @@ app = Flask(__name__)
 frame_lock = threading.Lock()
 latest_frame = None
 
-# Inicializácia kamery s hardvérovou rotáciou (vflip=True, hflip=True == 180°)
+# Inicializácia kamery
 picam2 = None
-if HAS_PICAMERA:
+if HAS_PICAMERA and HAS_CV2:
     try:
         picam2 = Picamera2()
         config = picam2.create_video_configuration(main={"size": (640, 480)})
@@ -46,7 +51,7 @@ if HAS_PICAMERA:
         logger.error(f"Zlyhanie kamery: {e}")
         picam2 = None
 else:
-    logger.warning("Spúšťam bez kamery (picamera2 chýba).")
+    logger.warning("Spúšťam bez kamery (picamera2 alebo cv2 chýba).")
 
 # Inicializácia hardvéru
 motors.initialize_motors()
@@ -54,12 +59,12 @@ arm.initialize_arm()
 
 def capture_frames():
     global latest_frame
-    if not picam2: return
+    if not picam2 or not HAS_CV2: return
     
     while True:
         try:
             frame = picam2.capture_array()
-            # Rotácia 180° priamo v CV2, ak nefunguje v driveri (na RPi 4 je to bleskové)
+            # Rotácia 180° priamo v CV2
             frame = cv2.rotate(frame, cv2.ROTATE_180)
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             
