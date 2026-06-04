@@ -80,52 +80,55 @@ def release_servos():
     for i in range(16):
         kit.servo[i].angle = None
 
+# Krok pre plynulejší a pomalší pohyb
+STEP = 2
+
 def rotate_left():
     curr = kit.servo[ROTATE_CHANNEL].angle or 90
-    move_servo(ROTATE_CHANNEL, curr + 10)
+    move_servo(ROTATE_CHANNEL, curr + STEP)
 
 def rotate_right():
     curr = kit.servo[ROTATE_CHANNEL].angle or 90
-    move_servo(ROTATE_CHANNEL, curr - 10)
+    move_servo(ROTATE_CHANNEL, curr - STEP)
 
 def arm_up():
     # Pohyb ramena hore
     curr_shoulder = kit.servo[SHOULDER_A].angle or 90
-    move_shoulder(curr_shoulder - 10)
+    move_shoulder(curr_shoulder - STEP)
     
     # Loket (elbow) sa môže hýbať tiež, ak chceš, zatiaľ ho nechám samostatne
     # curr_elbow = kit.servo[ELBOW_CHANNEL].angle or 180
-    # move_servo(ELBOW_CHANNEL, curr_elbow - 10)
+    # move_servo(ELBOW_CHANNEL, curr_elbow - STEP)
 
 def arm_down():
     # Pohyb ramena dolu
     curr_shoulder = kit.servo[SHOULDER_A].angle or 90
-    move_shoulder(curr_shoulder + 10)
+    move_shoulder(curr_shoulder + STEP)
 
 def grip_open():
     curr = kit.servo[GRIP_CHANNEL].angle or 90
-    move_servo(GRIP_CHANNEL, curr + 10)
+    move_servo(GRIP_CHANNEL, curr + STEP)
 
 def grip_close():
     curr = kit.servo[GRIP_CHANNEL].angle or 90
-    move_servo(GRIP_CHANNEL, curr - 10)
+    move_servo(GRIP_CHANNEL, curr - STEP)
 
 # Proxy funkcie pre kameru (aby sme nemuseli prepisovať app.py)
 def cam_left():
     curr = kit.servo[PAN_CHANNEL].angle or 90
-    move_servo(PAN_CHANNEL, curr + 5)
+    move_servo(PAN_CHANNEL, curr + STEP)
 
 def cam_right():
     curr = kit.servo[PAN_CHANNEL].angle or 90
-    move_servo(PAN_CHANNEL, curr - 5)
+    move_servo(PAN_CHANNEL, curr - STEP)
 
 def cam_up():
     curr = kit.servo[TILT_CHANNEL].angle or 90
-    move_servo(TILT_CHANNEL, curr - 5)
+    move_servo(TILT_CHANNEL, curr - STEP)
 
 def cam_down():
     curr = kit.servo[TILT_CHANNEL].angle or 90
-    move_servo(TILT_CHANNEL, curr + 5)
+    move_servo(TILT_CHANNEL, curr + STEP)
 
 def cleanup():
     release_servos()
