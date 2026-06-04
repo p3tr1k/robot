@@ -38,16 +38,19 @@ if kit:
 SAFE_MIN = 5
 SAFE_MAX = 175
 
-# Predvolené (stredové) uhly
+# Predvolené (stredové/oddychové) uhly
 default_angles = {
     ROTATE_CHANNEL: 100,
-    SHOULDER_A: 90,
-    SHOULDER_B: 90, # Bude automaticky 180-90 = 90
+    SHOULDER_A: 170, # Zmenené na 170 (opreté o chrbát)
+    SHOULDER_B: 10,  # 180 - 170
     ELBOW_CHANNEL: 180,
     GRIP_CHANNEL: 90,
     PAN_CHANNEL: 90,
     TILT_CHANNEL: 90
 }
+
+# Pamäť poslednej polohy (aby sme po release nezačínali vždy od 90)
+current_angles = default_angles.copy()
 
 def move_servo(channel, angle):
     """
@@ -56,6 +59,7 @@ def move_servo(channel, angle):
     if kit:
         safe_angle = max(SAFE_MIN, min(SAFE_MAX, angle))
         kit.servo[channel].angle = safe_angle
+        current_angles[channel] = safe_angle # Uložíme do pamäte
 
 def move_shoulder(angle):
     """
@@ -66,68 +70,58 @@ def move_shoulder(angle):
     move_servo(SHOULDER_B, 180 - safe_angle)
 
 def initialize_arm():
-    if not kit: return
-    for ch, ang in default_angles.items():
-        if ch == SHOULDER_A:
-            move_shoulder(ang)
-        elif ch == SHOULDER_B:
-            continue # Ošetrené v move_shoulder(SHOULDER_A)
-        else:
-            move_servo(ch, ang)
+    # Už neposielame tvrdé uhly pri štarte. 
+    # Necháme rameno uvoľnené (limp), kým používateľ nepošle prvý príkaz.
+    pass
 
 def release_servos():
     if not kit: return
     for i in range(16):
         kit.servo[i].angle = None
+    # current_angles NEMENÍME, pamätáme si poslednú známu polohu!
 
 # Krok pre plynulejší a pomalší pohyb
-STEP = 2
+STEP = 1
 
 def rotate_left():
-    curr = kit.servo[ROTATE_CHANNEL].angle or 90
+    curr = current_angles.get(ROTATE_CHANNEL, 90)
     move_servo(ROTATE_CHANNEL, curr + STEP)
 
 def rotate_right():
-    curr = kit.servo[ROTATE_CHANNEL].angle or 90
+    curr = current_angles.get(ROTATE_CHANNEL, 90)
     move_servo(ROTATE_CHANNEL, curr - STEP)
 
 def arm_up():
-    # Pohyb ramena hore
-    curr_shoulder = kit.servo[SHOULDER_A].angle or 90
+    curr_shoulder = current_angles.get(SHOULDER_A, 170)
     move_shoulder(curr_shoulder - STEP)
-    
-    # Loket (elbow) sa môže hýbať tiež, ak chceš, zatiaľ ho nechám samostatne
-    # curr_elbow = kit.servo[ELBOW_CHANNEL].angle or 180
-    # move_servo(ELBOW_CHANNEL, curr_elbow - STEP)
 
 def arm_down():
-    # Pohyb ramena dolu
-    curr_shoulder = kit.servo[SHOULDER_A].angle or 90
+    curr_shoulder = current_angles.get(SHOULDER_A, 170)
     move_shoulder(curr_shoulder + STEP)
 
 def grip_open():
-    curr = kit.servo[GRIP_CHANNEL].angle or 90
+    curr = current_angles.get(GRIP_CHANNEL, 90)
     move_servo(GRIP_CHANNEL, curr + STEP)
 
 def grip_close():
-    curr = kit.servo[GRIP_CHANNEL].angle or 90
+    curr = current_angles.get(GRIP_CHANNEL, 90)
     move_servo(GRIP_CHANNEL, curr - STEP)
 
 # Proxy funkcie pre kameru (aby sme nemuseli prepisovať app.py)
 def cam_left():
-    curr = kit.servo[PAN_CHANNEL].angle or 90
+    curr = current_angles.get(PAN_CHANNEL, 90)
     move_servo(PAN_CHANNEL, curr + STEP)
 
 def cam_right():
-    curr = kit.servo[PAN_CHANNEL].angle or 90
+    curr = current_angles.get(PAN_CHANNEL, 90)
     move_servo(PAN_CHANNEL, curr - STEP)
 
 def cam_up():
-    curr = kit.servo[TILT_CHANNEL].angle or 90
+    curr = current_angles.get(TILT_CHANNEL, 90)
     move_servo(TILT_CHANNEL, curr - STEP)
 
 def cam_down():
-    curr = kit.servo[TILT_CHANNEL].angle or 90
+    curr = current_angles.get(TILT_CHANNEL, 90)
     move_servo(TILT_CHANNEL, curr + STEP)
 
 def cleanup():
