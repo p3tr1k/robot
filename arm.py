@@ -78,7 +78,20 @@ def release_servos():
     if not kit: return
     for i in range(16):
         kit.servo[i].angle = None
-    # current_angles NEMENÍME, pamätáme si poslednú známu polohu!
+    
+    # Odhad pádu ramena po vypnutí serv (Workaround pre gravitáciu)
+    # Ak je kolmo (okolo 90°), predpokladáme, že zostane stáť.
+    # Ak je naklonené dozadu, padne na chrbát (170°).
+    # Ak je naklonené dopredu, padne na predný doraz (napr. 30°).
+    shoulder = current_angles.get(SHOULDER_A, 170)
+    if shoulder > 105:
+        current_angles[SHOULDER_A] = 170
+        logger.info("Rameno uvoľnené. Odhad polohy: Padlo dozadu (170°).")
+    elif shoulder < 75:
+        current_angles[SHOULDER_A] = 30 # Uprav tento uhol podľa fyzického predného dorazu
+        logger.info("Rameno uvoľnené. Odhad polohy: Padlo dopredu (30°).")
+    else:
+        logger.info("Rameno uvoľnené. Odhad polohy: Zostalo stáť kolmo.")
 
 # Krok pre plynulejší a pomalší pohyb
 STEP = 1
