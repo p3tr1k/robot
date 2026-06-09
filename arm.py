@@ -41,7 +41,8 @@ SAFE_MIN = 5
 SAFE_MAX = 175
 
 # Špecifické limity pre Gripper (aby sa nezasekával v extrémoch a vládal sa vrátiť)
-GRIP_SAFE_MIN = 20
+# Obmedzené na 80 stupňov dráhy, pretože väčšina 3D tlačených mechanizmov sa pri viac ako 90° prevráti cez mŕtvy bod
+GRIP_SAFE_MIN = 80 
 GRIP_SAFE_MAX = 160
 
 # Predvolené (stredové/oddychové) uhly
@@ -51,7 +52,7 @@ default_angles = {
     SHOULDER_B: 10,  
     ELBOW_CHANNEL: 180,
     WRIST_CHANNEL: 90,
-    GRIP_CHANNEL: 90,
+    GRIP_CHANNEL: 120, # Nastavený na stred nového rozsahu
     PAN_CHANNEL: 90,
     TILT_CHANNEL: 90
 }
