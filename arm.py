@@ -100,7 +100,7 @@ def release_servos():
 
 # Krok pre plynulejší a pomalší pohyb
 STEP = 1
-GRIP_STEP = 5 # Väčší krok pre gripper na prekonanie deadbandu (mŕtveho pásma) menšieho serva
+GRIP_STEP = 3 # Znížené z 5 na 3, aby to nebolo až také trhavé, ale stále prekonalo mŕtve pásmo
 
 def rotate_left():
     curr = current_angles.get(ROTATE_CHANNEL, 90)
