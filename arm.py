@@ -99,8 +99,8 @@ def release_servos():
         logger.info("Rameno uvoľnené. Odhad polohy: Zostalo stáť kolmo.")
 
 # Krok pre plynulejší a pomalší pohyb
-STEP = 1
-GRIP_STEP = 3 # Znížené z 5 na 3, aby to nebolo až také trhavé, ale stále prekonalo mŕtve pásmo
+STEP = 2 # Zvýšené z 1 na 2 kvôli pomalšiemu intervalu na webe (100ms)
+GRIP_STEP = 10 # Zvýšené z 3 na 10 pre rýchlejší chod grippera bez zásekov
 
 def rotate_left():
     curr = current_angles.get(ROTATE_CHANNEL, 90)

@@ -38,7 +38,7 @@
             }
             // Pošleme príkaz okamžite a potom opakujeme
             sendCommand(action);
-            activeButton = setInterval(() => sendCommand(action), 50);
+            activeButton = setInterval(() => sendCommand(action), 100);
         }
 
         function stopAction(event) {
