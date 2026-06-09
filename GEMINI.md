@@ -11,6 +11,7 @@ This file contains memory, context, and specific instructions for Gemini CLI whe
 *   **Base Rotation:** Connected to channel 8 (`ROTATE_CHANNEL`).
 *   **Camera:** **PENDING HARDWARE**. Pan/Tilt servos are on channels 9 and 7.
 *   **Power / Hardware Lock:** The PCA9685 and DC Motors share a power supply. Simultaneous operation causes severe brownouts and I2C corruption, which previously destroyed a servo. **Fix:** A `hardware_lock` (Threading Lock) is implemented in `app.py` to serialize all motor and servo commands. Never operate wheels and arms concurrently.
+*   **Payload Limitation:** The current physical design (lever arm lengths) puts the elbow MG996R servo at its absolute stall torque limit just carrying the wrist and gripper. Attempting to lift a 93g payload (wristwatch) caused the elbow servo to critically overheat again. **A mechanical redesign (shortening the forearm/bicep or adding counter-springs) is required before attempting to lift objects.**
 
 ## Software Design Rules implemented
 *   **Movement Smoothing:** Web UI sends commands via an async fetch lock every 100ms (preventing backlog). `arm.py` uses `STEP = 2` for the arm.
