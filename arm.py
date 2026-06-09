@@ -233,5 +233,5 @@ def park_arm():
     logger.info("Rameno úspešne zaparkované.")
 
 def cleanup():
-    park_arm()
+    # park_arm() # Nateraz ZAKÁZANÉ. Spôsobuje mechanické kolízie pri vypínaní.
     release_servos()
