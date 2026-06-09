@@ -188,5 +188,5 @@ def park_arm():
     logger.info("Rameno zaparkované.")
 
 def cleanup():
-    park_arm()
+    # park_arm() # Dočasne vypnuté, pretože po prehodení serv (ľavé/pravé) ide opačne
     release_servos()
