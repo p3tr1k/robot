@@ -34,7 +34,7 @@ if kit:
     kit.servo[SHOULDER_B].set_pulse_width_range(500, 2550)
     kit.servo[ELBOW_CHANNEL].set_pulse_width_range(500, 2550)
     kit.servo[WRIST_CHANNEL].set_pulse_width_range(500, 2550)
-    kit.servo[GRIP_CHANNEL].set_pulse_width_range(500, 2550)
+    kit.servo[GRIP_CHANNEL].set_pulse_width_range(500, 2500) # Rozšírené na štandard pre väčší rozsah pohybu
 
 # Bezpečné limity pre MG996R (prevencia bzučania a mechanického namáhania)
 SAFE_MIN = 5
