@@ -40,6 +40,10 @@ if kit:
 SAFE_MIN = 5
 SAFE_MAX = 175
 
+# Špecifické limity pre Gripper (aby sa nezasekával v extrémoch a vládal sa vrátiť)
+GRIP_SAFE_MIN = 20
+GRIP_SAFE_MAX = 160
+
 # Predvolené (stredové/oddychové) uhly
 default_angles = {
     ROTATE_CHANNEL: 100,
@@ -144,11 +148,13 @@ def wrist_down():
 
 def grip_open():
     curr = current_angles.get(GRIP_CHANNEL, 90)
-    move_servo(GRIP_CHANNEL, curr - GRIP_STEP) # Menší uhol = Otváranie
+    safe_angle = max(GRIP_SAFE_MIN, curr - GRIP_STEP)
+    move_servo(GRIP_CHANNEL, safe_angle)
 
 def grip_close():
     curr = current_angles.get(GRIP_CHANNEL, 90)
-    move_servo(GRIP_CHANNEL, curr + GRIP_STEP) # Väčší uhol (napr. 140) = Zatváranie
+    safe_angle = min(GRIP_SAFE_MAX, curr + GRIP_STEP)
+    move_servo(GRIP_CHANNEL, safe_angle)
 
 # Proxy funkcie pre kameru (aby sme nemuseli prepisovať app.py)
 def cam_left():
