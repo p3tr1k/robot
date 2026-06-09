@@ -148,13 +148,13 @@ def wrist_down():
     move_servo(WRIST_CHANNEL, curr + STEP)
 
 def grip_open():
-    curr = current_angles.get(GRIP_CHANNEL, 90)
-    safe_angle = max(GRIP_SAFE_MIN, curr - GRIP_STEP)
+    curr = current_angles.get(GRIP_CHANNEL, 120)
+    safe_angle = min(GRIP_SAFE_MAX, curr + GRIP_STEP) # Zväčšovanie uhla = Otváranie
     move_servo(GRIP_CHANNEL, safe_angle)
 
 def grip_close():
-    curr = current_angles.get(GRIP_CHANNEL, 90)
-    safe_angle = min(GRIP_SAFE_MAX, curr + GRIP_STEP)
+    curr = current_angles.get(GRIP_CHANNEL, 120)
+    safe_angle = max(GRIP_SAFE_MIN, curr - GRIP_STEP) # Zmenšovanie uhla = Zatváranie
     move_servo(GRIP_CHANNEL, safe_angle)
 
 # Proxy funkcie pre kameru (aby sme nemuseli prepisovať app.py)
