@@ -148,14 +148,12 @@ def wrist_down():
     move_servo(WRIST_CHANNEL, curr + STEP)
 
 def grip_open():
-    curr = current_angles.get(GRIP_CHANNEL, 120)
-    safe_angle = min(GRIP_SAFE_MAX, curr + GRIP_STEP) # Zväčšovanie uhla = Otváranie
-    move_servo(GRIP_CHANNEL, safe_angle)
+    # Na tvrdo skok pre maximálny krútiaci moment, obmedzený na bezpečný limit 80, aby sa neprevrátil mechanizmus
+    move_servo(GRIP_CHANNEL, GRIP_SAFE_MIN)
 
 def grip_close():
-    curr = current_angles.get(GRIP_CHANNEL, 120)
-    safe_angle = max(GRIP_SAFE_MIN, curr - GRIP_STEP) # Zmenšovanie uhla = Zatváranie
-    move_servo(GRIP_CHANNEL, safe_angle)
+    # Na tvrdo skok do zatvorenej polohy s maximálnou silou
+    move_servo(GRIP_CHANNEL, GRIP_SAFE_MAX)
 
 # Proxy funkcie pre kameru (aby sme nemuseli prepisovať app.py)
 def cam_left():
