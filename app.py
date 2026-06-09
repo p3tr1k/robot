@@ -29,6 +29,7 @@ app = Flask(__name__)
 
 # Globálny zámok a cache pre snímky
 frame_lock = threading.Lock()
+hardware_lock = threading.Lock() # Zámok na prevenciu súbežného behu motorov a serv
 latest_frame = None
 
 # Inicializácia kamery
@@ -116,10 +117,12 @@ def handle_command(action):
         }
 
         if action in motor_commands:
-            motor_commands[action]()
+            with hardware_lock:
+                motor_commands[action]()
             return jsonify({"status": "success"}), 200
         elif action in arm_commands:
-            arm_commands[action]()
+            with hardware_lock:
+                arm_commands[action]()
             return jsonify({"status": "success"}), 200
         
         return jsonify({"status": "error", "message": "Neznámy príkaz"}), 400

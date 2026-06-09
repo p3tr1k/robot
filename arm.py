@@ -37,8 +37,8 @@ if kit:
     kit.servo[GRIP_CHANNEL].set_pulse_width_range(500, 2500) # Rozšírené na štandard pre väčší rozsah pohybu
 
 # Bezpečné limity pre MG996R (prevencia bzučania a mechanického namáhania)
-SAFE_MIN = 5
-SAFE_MAX = 175
+SAFE_MIN = 0 # Odomknuté na absolútne minimum
+SAFE_MAX = 180 # Odomknuté na absolútne maximum
 
 # Špecifické limity pre Gripper (aby sa nezasekával v extrémoch a vládal sa vrátiť)
 # Obmedzené na 80 stupňov dráhy, pretože väčšina 3D tlačených mechanizmov sa pri viac ako 90° prevráti cez mŕtvy bod
@@ -150,11 +150,13 @@ def elbow_down():
 
 def wrist_up():
     curr = current_angles.get(WRIST_CHANNEL, 90)
-    move_servo(WRIST_CHANNEL, curr - STEP)
+    safe_angle = max(0, curr - STEP) # Extrémny limit, odomknuté z 5 na 0
+    move_servo(WRIST_CHANNEL, safe_angle)
 
 def wrist_down():
     curr = current_angles.get(WRIST_CHANNEL, 90)
-    move_servo(WRIST_CHANNEL, curr + STEP)
+    safe_angle = min(180, curr + STEP) # Extrémny limit, odomknuté z 175 na 180
+    move_servo(WRIST_CHANNEL, safe_angle)
 
 def grip_open():
     # Na tvrdo skok pre maximálny krútiaci moment, obmedzený na bezpečný limit 80, aby sa neprevrátil mechanizmus
