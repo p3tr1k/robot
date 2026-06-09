@@ -128,6 +128,14 @@ def elbow_down():
     curr = current_angles.get(ELBOW_CHANNEL, 180)
     move_servo(ELBOW_CHANNEL, curr + STEP) # Invertované
 
+def wrist_up():
+    curr = current_angles.get(WRIST_CHANNEL, 90)
+    move_servo(WRIST_CHANNEL, curr - STEP)
+
+def wrist_down():
+    curr = current_angles.get(WRIST_CHANNEL, 90)
+    move_servo(WRIST_CHANNEL, curr + STEP)
+
 def grip_open():
     curr = current_angles.get(GRIP_CHANNEL, 90)
     move_servo(GRIP_CHANNEL, curr + STEP)

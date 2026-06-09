@@ -109,6 +109,7 @@ def handle_command(action):
             'rotate_left': arm.rotate_left, 'rotate_right': arm.rotate_right,
             'arm_up': arm.arm_up, 'arm_down': arm.arm_down,
             'elbow_up': arm.elbow_up, 'elbow_down': arm.elbow_down,
+            'wrist_up': arm.wrist_up, 'wrist_down': arm.wrist_down,
             'grip_open': arm.grip_open, 'grip_close': arm.grip_close,
             'cam_up': arm.cam_up, 'cam_down': arm.cam_down,
             'cam_left': arm.cam_left, 'cam_right': arm.cam_right

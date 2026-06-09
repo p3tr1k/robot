@@ -4,11 +4,12 @@ This file contains memory, context, and specific instructions for Gemini CLI whe
 
 ## Current Hardware State (As of June 2026)
 *   **Motors:** Connected and working (`gpiozero`).
-*   **Arm (Shoulder):** Two MG996R servos mounted opposite to each other. Connected to channels 12 (`SHOULDER_A`) and 13 (`SHOULDER_B`). They move synchronously (inversely in code) to lift the arm.
-*   **Arm (Elbow):** Connected to channel 14 (`ELBOW_CHANNEL`). Inverse Kinematics (IK) is implemented so the elbow automatically moves opposite to the shoulder to keep the forearm level. Independent controls also exist.
-*   **Base Rotation:** Connected to channel 11 (`ROTATE_CHANNEL`).
-*   **Wrist/Gripper:** **PENDING 3D PRINTING**. Not physically connected yet. Code currently has a placeholder `grip_open`/`grip_close` on channel 15.
-*   **Camera:** **PENDING HARDWARE**. The code in `app.py` has been modified to make `picamera2` and `cv2` optional so the arm can be tested without the camera connected. Pan/Tilt servos are on channels 9 and 8.
+*   **Arm (Shoulder):** Two MG996R servos. Connected to channels 10 (`SHOULDER_A`) and 11 (`SHOULDER_B`).
+*   **Arm (Elbow):** Connected to channel 12 (`ELBOW_CHANNEL`).
+*   **Wrist (Zapastie):** **INSTALLED**. Connected to channel 13 (`WRIST_CHANNEL`).
+*   **Gripper:** **INSTALLED**. Connected to channel 15 (`GRIP_CHANNEL`).
+*   **Base Rotation:** Connected to channel 8 (`ROTATE_CHANNEL`).
+*   **Camera:** **PENDING HARDWARE**. Pan/Tilt servos are on channels 9 and 7 (Tilt moved from 8).
 *   **Power:** The PCA9685 and MG996R servos draw significant current. Stalling them (e.g., lifting heavy loads) can cause a voltage drop leading to a servo lockout. **Fix:** Hard physical reset of the servo power supply.
 
 ## Software Design Rules implemented
