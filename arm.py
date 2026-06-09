@@ -89,9 +89,11 @@ def release_servos():
     shoulder = current_angles.get(SHOULDER_A, 170)
     if shoulder > 105:
         current_angles[SHOULDER_A] = 170
+        current_angles[SHOULDER_B] = 180 - 170
         logger.info("Rameno uvoľnené. Odhad polohy: Padlo dozadu (170°).")
     elif shoulder < 75:
         current_angles[SHOULDER_A] = 30 # Uprav tento uhol podľa fyzického predného dorazu
+        current_angles[SHOULDER_B] = 180 - 30
         logger.info("Rameno uvoľnené. Odhad polohy: Padlo dopredu (30°).")
     else:
         logger.info("Rameno uvoľnené. Odhad polohy: Zostalo stáť kolmo.")
