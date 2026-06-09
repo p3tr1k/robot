@@ -48,8 +48,8 @@ GRIP_SAFE_MAX = 160
 # Predvolené (stredové/oddychové) uhly
 default_angles = {
     ROTATE_CHANNEL: 100,
-    SHOULDER_A: 170, 
-    SHOULDER_B: 10,  
+    SHOULDER_A: 10,  # Zmenené z 170 na 10 kvôli prehodeniu ľavého/pravého serva
+    SHOULDER_B: 170, # Zmenené z 10 na 170 
     ELBOW_CHANNEL: 180,
     WRIST_CHANNEL: 90,
     GRIP_CHANNEL: 120, # Nastavený na stred nového rozsahu
@@ -91,15 +91,15 @@ def release_servos():
     # Ak je kolmo (okolo 90°), predpokladáme, že zostane stáť.
     # Ak je naklonené dozadu, padne na chrbát (170°).
     # Ak je naklonené dopredu, padne na predný doraz (napr. 30°).
-    shoulder = current_angles.get(SHOULDER_A, 170)
+    shoulder = current_angles.get(SHOULDER_A, 10)
     if shoulder > 105:
-        current_angles[SHOULDER_A] = 170
-        current_angles[SHOULDER_B] = 180 - 170
-        logger.info("Rameno uvoľnené. Odhad polohy: Padlo dozadu (170°).")
+        current_angles[SHOULDER_A] = 150 # Predný doraz (zrkadlovo k pôvodným 30)
+        current_angles[SHOULDER_B] = 180 - 150
+        logger.info("Rameno uvoľnené. Odhad polohy: Padlo dopredu (150°).")
     elif shoulder < 75:
-        current_angles[SHOULDER_A] = 30 # Uprav tento uhol podľa fyzického predného dorazu
-        current_angles[SHOULDER_B] = 180 - 30
-        logger.info("Rameno uvoľnené. Odhad polohy: Padlo dopredu (30°).")
+        current_angles[SHOULDER_A] = 10 # Zadný doraz/chrbát (zrkadlovo k 170)
+        current_angles[SHOULDER_B] = 180 - 10
+        logger.info("Rameno uvoľnené. Odhad polohy: Padlo dozadu (10°).")
     else:
         logger.info("Rameno uvoľnené. Odhad polohy: Zostalo stáť kolmo.")
 
@@ -174,12 +174,12 @@ def cam_down():
 
 def park_arm():
     """
-    Pomaly zaparkuje rameno do oddychovej polohy (170°) pred vypnutím.
+    Pomaly zaparkuje rameno do oddychovej polohy na chrbte (10°) pred vypnutím.
     """
     import time
-    logger.info("Parkujem rameno do oddychovej polohy...")
-    curr_shoulder = current_angles.get(SHOULDER_A, 170)
-    target = 170
+    logger.info("Parkujem rameno do oddychovej polohy (10°)...")
+    curr_shoulder = current_angles.get(SHOULDER_A, 10)
+    target = 10
     
     if curr_shoulder < target:
         for angle in range(int(curr_shoulder), target + 1, 1):
@@ -193,5 +193,5 @@ def park_arm():
     logger.info("Rameno zaparkované.")
 
 def cleanup():
-    # park_arm() # Dočasne vypnuté, pretože po prehodení serv (ľavé/pravé) ide opačne
+    park_arm()
     release_servos()
