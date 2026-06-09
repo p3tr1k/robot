@@ -45,6 +45,11 @@ SAFE_MAX = 175
 GRIP_SAFE_MIN = 80 
 GRIP_SAFE_MAX = 160
 
+# Špecifické limity pre Lakeť (aby pri down pohybe netlačil do samotného ramena)
+# 180 je horná (vystretá) poloha. Dolnú polohu obmedzíme, aby neschádzal príliš nízko.
+ELBOW_SAFE_MIN = 30 # Upraviteľný limit, aby lakeť neschádzal príliš dole
+ELBOW_SAFE_MAX = 180
+
 # Predvolené (stredové/oddychové) uhly
 default_angles = {
     ROTATE_CHANNEL: 100,
@@ -121,7 +126,8 @@ def arm_up():
     
     # Pridanie pohybu lakťa (inverzne k ramenu pre udržanie roviny)
     curr_elbow = current_angles.get(ELBOW_CHANNEL, 180)
-    move_servo(ELBOW_CHANNEL, curr_elbow + STEP)
+    safe_elbow = min(ELBOW_SAFE_MAX, curr_elbow + STEP)
+    move_servo(ELBOW_CHANNEL, safe_elbow)
 
 def arm_down():
     curr_shoulder = current_angles.get(SHOULDER_A, 10)
@@ -129,15 +135,18 @@ def arm_down():
     
     # Pridanie pohybu lakťa (inverzne k ramenu pre udržanie roviny)
     curr_elbow = current_angles.get(ELBOW_CHANNEL, 180)
-    move_servo(ELBOW_CHANNEL, curr_elbow - STEP)
+    safe_elbow = max(ELBOW_SAFE_MIN, curr_elbow - STEP)
+    move_servo(ELBOW_CHANNEL, safe_elbow)
 
 def elbow_up():
     curr = current_angles.get(ELBOW_CHANNEL, 180)
-    move_servo(ELBOW_CHANNEL, curr - STEP) # Invertované
+    safe_angle = max(ELBOW_SAFE_MIN, curr - STEP) # Zamedzenie prejdenia za limit
+    move_servo(ELBOW_CHANNEL, safe_angle)
 
 def elbow_down():
     curr = current_angles.get(ELBOW_CHANNEL, 180)
-    move_servo(ELBOW_CHANNEL, curr + STEP) # Invertované
+    safe_angle = min(ELBOW_SAFE_MAX, curr + STEP) # Zamedzenie prejdenia za limit
+    move_servo(ELBOW_CHANNEL, safe_angle)
 
 def wrist_up():
     curr = current_angles.get(WRIST_CHANNEL, 90)
