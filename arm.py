@@ -100,6 +100,7 @@ def release_servos():
 
 # Krok pre plynulejší a pomalší pohyb
 STEP = 1
+GRIP_STEP = 5 # Väčší krok pre gripper na prekonanie deadbandu (mŕtveho pásma) menšieho serva
 
 def rotate_left():
     curr = current_angles.get(ROTATE_CHANNEL, 90)
@@ -143,11 +144,11 @@ def wrist_down():
 
 def grip_open():
     curr = current_angles.get(GRIP_CHANNEL, 90)
-    move_servo(GRIP_CHANNEL, curr + STEP)
+    move_servo(GRIP_CHANNEL, curr + GRIP_STEP)
 
 def grip_close():
     curr = current_angles.get(GRIP_CHANNEL, 90)
-    move_servo(GRIP_CHANNEL, curr - STEP)
+    move_servo(GRIP_CHANNEL, curr - GRIP_STEP)
 
 # Proxy funkcie pre kameru (aby sme nemuseli prepisovať app.py)
 def cam_left():
