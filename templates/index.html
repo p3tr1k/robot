@@ -24,29 +24,37 @@
         }
     </style>
     <script>
-        let activeButton = null;
+        let activeAction = null;
+        let isFetching = false;
 
         function sendCommand(action) {
-            fetch(`/command/${action}`, { method: 'POST' })
+            return fetch(`/command/${action}`, { method: 'POST' })
                 .catch(error => console.error('Error:', error));
+        }
+
+        async function actionLoop() {
+            if (!activeAction || isFetching) return;
+            isFetching = true;
+            await sendCommand(activeAction);
+            isFetching = false;
+            
+            // Ak je tlačidlo stále stlačené, opakujeme akciu s malým oneskorením
+            if (activeAction) {
+                setTimeout(actionLoop, 20);
+            }
         }
 
         function startAction(action, event) {
             if (event && event.cancelable) event.preventDefault(); // Zabraňuje zdvojeniu touch/mouse eventov
-            if (activeButton) {
-                clearInterval(activeButton);
+            if (activeAction !== action) {
+                activeAction = action;
+                actionLoop();
             }
-            // Pošleme príkaz okamžite a potom opakujeme
-            sendCommand(action);
-            activeButton = setInterval(() => sendCommand(action), 100);
         }
 
         function stopAction(event) {
             if (event && event.cancelable) event.preventDefault();
-            if (activeButton) {
-                clearInterval(activeButton);
-                activeButton = null;
-            }
+            activeAction = null;
             sendCommand('stop');
         }
 
