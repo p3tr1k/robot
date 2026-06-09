@@ -116,20 +116,20 @@ def rotate_right():
     move_servo(ROTATE_CHANNEL, curr + STEP) # Invertované
 
 def arm_up():
-    curr_shoulder = current_angles.get(SHOULDER_A, 170)
-    move_shoulder(curr_shoulder + STEP) # Invertované (hore ide uhol nahor)
+    curr_shoulder = current_angles.get(SHOULDER_A, 10)
+    move_shoulder(curr_shoulder - STEP) # Po výmene serv ide uhol pre UP nadol (smerom k 0)
     
     # Pridanie pohybu lakťa (inverzne k ramenu pre udržanie roviny)
     curr_elbow = current_angles.get(ELBOW_CHANNEL, 180)
-    move_servo(ELBOW_CHANNEL, curr_elbow + STEP) # Opravená inverzia lakťa
+    move_servo(ELBOW_CHANNEL, curr_elbow + STEP)
 
 def arm_down():
-    curr_shoulder = current_angles.get(SHOULDER_A, 170)
-    move_shoulder(curr_shoulder - STEP) # Invertované
+    curr_shoulder = current_angles.get(SHOULDER_A, 10)
+    move_shoulder(curr_shoulder + STEP) # Po výmene serv ide uhol pre DOWN nahor (smerom k 180)
     
     # Pridanie pohybu lakťa (inverzne k ramenu pre udržanie roviny)
     curr_elbow = current_angles.get(ELBOW_CHANNEL, 180)
-    move_servo(ELBOW_CHANNEL, curr_elbow - STEP) # Opravená inverzia lakťa
+    move_servo(ELBOW_CHANNEL, curr_elbow - STEP)
 
 def elbow_up():
     curr = current_angles.get(ELBOW_CHANNEL, 180)
@@ -174,23 +174,52 @@ def cam_down():
 
 def park_arm():
     """
-    Pomaly zaparkuje rameno do oddychovej polohy na chrbte (10°) pred vypnutím.
+    Pomaly zaparkuje rameno, lakeť a zápästie do oddychovej polohy pred vypnutím.
     """
     import time
-    logger.info("Parkujem rameno do oddychovej polohy (10°)...")
-    curr_shoulder = current_angles.get(SHOULDER_A, 10)
-    target = 10
+    logger.info("Parkujem celé rameno do oddychovej polohy...")
     
-    if curr_shoulder < target:
-        for angle in range(int(curr_shoulder), target + 1, 1):
-            move_shoulder(angle)
-            time.sleep(0.02) # Pomalý pohyb
-    elif curr_shoulder > target:
-        for angle in range(int(curr_shoulder), target - 1, -1):
-            move_shoulder(angle)
+    targets = {
+        SHOULDER_A: default_angles[SHOULDER_A],
+        ELBOW_CHANNEL: default_angles[ELBOW_CHANNEL],
+        WRIST_CHANNEL: default_angles[WRIST_CHANNEL]
+    }
+    
+    moving = True
+    while moving:
+        moving = False
+        
+        # Rameno (Shoulder)
+        curr_s = current_angles.get(SHOULDER_A, targets[SHOULDER_A])
+        if int(curr_s) < targets[SHOULDER_A]:
+            move_shoulder(curr_s + 1)
+            moving = True
+        elif int(curr_s) > targets[SHOULDER_A]:
+            move_shoulder(curr_s - 1)
+            moving = True
+            
+        # Lakeť (Elbow)
+        curr_e = current_angles.get(ELBOW_CHANNEL, targets[ELBOW_CHANNEL])
+        if int(curr_e) < targets[ELBOW_CHANNEL]:
+            move_servo(ELBOW_CHANNEL, curr_e + 1)
+            moving = True
+        elif int(curr_e) > targets[ELBOW_CHANNEL]:
+            move_servo(ELBOW_CHANNEL, curr_e - 1)
+            moving = True
+            
+        # Zápästie (Wrist)
+        curr_w = current_angles.get(WRIST_CHANNEL, targets[WRIST_CHANNEL])
+        if int(curr_w) < targets[WRIST_CHANNEL]:
+            move_servo(WRIST_CHANNEL, curr_w + 1)
+            moving = True
+        elif int(curr_w) > targets[WRIST_CHANNEL]:
+            move_servo(WRIST_CHANNEL, curr_w - 1)
+            moving = True
+            
+        if moving:
             time.sleep(0.02)
             
-    logger.info("Rameno zaparkované.")
+    logger.info("Rameno úspešne zaparkované.")
 
 def cleanup():
     park_arm()
