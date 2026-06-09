@@ -143,12 +143,12 @@ def wrist_down():
     move_servo(WRIST_CHANNEL, curr + STEP)
 
 def grip_open():
-    curr = current_angles.get(GRIP_CHANNEL, 90)
-    move_servo(GRIP_CHANNEL, curr - GRIP_STEP) # Vymenené: teraz zmenšuje uhol
+    # Na tvrdo skok do otvorenej polohy, aby malo servo maximálny prúd a prekonalo trenie
+    move_servo(GRIP_CHANNEL, 140)
 
 def grip_close():
-    curr = current_angles.get(GRIP_CHANNEL, 90)
-    move_servo(GRIP_CHANNEL, curr + GRIP_STEP) # Vymenené: teraz zväčšuje uhol
+    # Na tvrdo skok do zatvorenej polohy
+    move_servo(GRIP_CHANNEL, 60)
 
 # Proxy funkcie pre kameru (aby sme nemuseli prepisovať app.py)
 def cam_left():
