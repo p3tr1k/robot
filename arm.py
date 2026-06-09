@@ -100,7 +100,7 @@ def release_servos():
 
 # Krok pre plynulejší a pomalší pohyb
 STEP = 2 # Zvýšené z 1 na 2 kvôli pomalšiemu intervalu na webe (100ms)
-GRIP_STEP = 10 # Zvýšené z 3 na 10 pre rýchlejší chod grippera bez zásekov
+GRIP_STEP = 5 # Umiernený krok, 10 bolo po odstránení lagov priveľa
 
 def rotate_left():
     curr = current_angles.get(ROTATE_CHANNEL, 90)
@@ -143,12 +143,12 @@ def wrist_down():
     move_servo(WRIST_CHANNEL, curr + STEP)
 
 def grip_open():
-    # Na tvrdo skok do otvorenej polohy, aby malo servo maximálny prúd a prekonalo trenie
-    move_servo(GRIP_CHANNEL, 140)
+    curr = current_angles.get(GRIP_CHANNEL, 90)
+    move_servo(GRIP_CHANNEL, curr - GRIP_STEP) # Menší uhol = Otváranie
 
 def grip_close():
-    # Na tvrdo skok do zatvorenej polohy
-    move_servo(GRIP_CHANNEL, 60)
+    curr = current_angles.get(GRIP_CHANNEL, 90)
+    move_servo(GRIP_CHANNEL, curr + GRIP_STEP) # Väčší uhol (napr. 140) = Zatváranie
 
 # Proxy funkcie pre kameru (aby sme nemuseli prepisovať app.py)
 def cam_left():
