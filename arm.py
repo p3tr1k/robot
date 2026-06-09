@@ -18,13 +18,14 @@ except Exception as e:
     kit = None
 
 # Kanály
-ROTATE_CHANNEL = 11
-SHOULDER_A = 12  # Pôvodne ARM1_CHANNEL
-SHOULDER_B = 13  # Pôvodne ARM2_CHANNEL
-ELBOW_CHANNEL = 14 # Pôvodne ARM3_CHANNEL
+ROTATE_CHANNEL = 8
+SHOULDER_A = 10
+SHOULDER_B = 11
+ELBOW_CHANNEL = 12
+WRIST_CHANNEL = 13
 GRIP_CHANNEL = 15
 PAN_CHANNEL = 9
-TILT_CHANNEL = 8
+TILT_CHANNEL = 7 # Posunuté z 8
 
 # Nastavenie rozsahov
 if kit:
@@ -32,6 +33,7 @@ if kit:
     kit.servo[SHOULDER_A].set_pulse_width_range(500, 2550)
     kit.servo[SHOULDER_B].set_pulse_width_range(500, 2550)
     kit.servo[ELBOW_CHANNEL].set_pulse_width_range(500, 2550)
+    kit.servo[WRIST_CHANNEL].set_pulse_width_range(500, 2550)
     kit.servo[GRIP_CHANNEL].set_pulse_width_range(600, 1900)
 
 # Bezpečné limity pre MG996R (prevencia bzučania a mechanického namáhania)
@@ -41,9 +43,10 @@ SAFE_MAX = 175
 # Predvolené (stredové/oddychové) uhly
 default_angles = {
     ROTATE_CHANNEL: 100,
-    SHOULDER_A: 170, # Zmenené na 170 (opreté o chrbát)
-    SHOULDER_B: 10,  # 180 - 170
+    SHOULDER_A: 170, 
+    SHOULDER_B: 10,  
     ELBOW_CHANNEL: 180,
+    WRIST_CHANNEL: 90,
     GRIP_CHANNEL: 90,
     PAN_CHANNEL: 90,
     TILT_CHANNEL: 90
