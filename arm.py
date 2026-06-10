@@ -83,9 +83,10 @@ def move_shoulder(angle):
     move_servo(SHOULDER_B, 180 - safe_angle)
 
 def initialize_arm():
-    # Už neposielame tvrdé uhly pri štarte. 
-    # Necháme rameno uvoľnené (limp), kým používateľ nepošle prvý príkaz.
-    pass
+    # Zabezpečíme, že po štarte (alebo reštarte aplikácie) sa do serv neposiela žiadny "duch" PWM signál, 
+    # ktorý by ich mohol držať v napätí a prehrievať, kým užívateľ nevydá prvý príkaz.
+    logger.info("Inicializujem rameno: Vypínam všetky PWM signály (Release).")
+    release_servos()
 
 def release_servos():
     if not kit: return
