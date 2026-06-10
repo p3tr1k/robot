@@ -90,8 +90,13 @@ def initialize_arm():
 
 def release_servos():
     if not kit: return
+    logger.info("Uvoľňujem všetky servá (vypínam PWM)...")
     for i in range(16):
-        kit.servo[i].angle = None
+        try:
+            kit.servo[i].angle = None
+            time.sleep(0.005) # Malá pauza pre zbernicu
+        except Exception as e:
+            logger.error(f"Chyba pri uvoľňovaní kanálu {i}: {e}")
     
     # Odhad pádu ramena po vypnutí serv (Workaround pre gravitáciu)
     # Ak je kolmo (okolo 90°), predpokladáme, že zostane stáť.
