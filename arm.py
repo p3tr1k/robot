@@ -7,6 +7,7 @@
 from adafruit_servokit import ServoKit
 import time
 import logging
+import threading
 
 logger = logging.getLogger(__name__)
 
@@ -164,13 +165,34 @@ def wrist_down():
     safe_angle = min(180, curr + STEP) # Extrémny limit, odomknuté z 175 na 180
     move_servo(WRIST_CHANNEL, safe_angle)
 
+grip_timer = None
+
+def _auto_release_gripper():
+    if not kit: return
+    try:
+        kit.servo[GRIP_CHANNEL].angle = None
+        logger.info("Gripper automaticky uvoľnený (PWM vypnuté).")
+    except Exception as e:
+        logger.error(f"Chyba pri automatickom uvoľňovaní grippera: {e}")
+
+def schedule_gripper_release():
+    global grip_timer
+    if grip_timer:
+        grip_timer.cancel()
+    # Nastavíme časovač na 0.5 sekundy. Kým užívateľ drží tlačidlo, časovač sa neustále posúva.
+    # Až keď tlačidlo pustí, ubehne 0.5s a servo sa uvoľní.
+    grip_timer = threading.Timer(0.5, _auto_release_gripper)
+    grip_timer.start()
+
 def grip_open():
     # Na tvrdo skok pre maximálny krútiaci moment, obmedzený na bezpečný limit 80, aby sa neprevrátil mechanizmus
     move_servo(GRIP_CHANNEL, GRIP_SAFE_MIN)
+    schedule_gripper_release()
 
 def grip_close():
     # Na tvrdo skok do zatvorenej polohy s maximálnou silou
     move_servo(GRIP_CHANNEL, GRIP_SAFE_MAX)
+    schedule_gripper_release()
 
 # Proxy funkcie pre kameru (aby sme nemuseli prepisovať app.py)
 def cam_left():
