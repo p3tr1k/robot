@@ -43,7 +43,7 @@ SAFE_MAX = 180 # Odomknuté na absolútne maximum
 # Špecifické limity pre Gripper (aby sa nezasekával v extrémoch a vládal sa vrátiť)
 # Obmedzené na 80 stupňov dráhy, pretože väčšina 3D tlačených mechanizmov sa pri viac ako 90° prevráti cez mŕtvy bod
 GRIP_SAFE_MIN = 80 
-GRIP_SAFE_MAX = 160
+GRIP_SAFE_MAX = 140 # Znížené zo 160, aby pri zatváraní netlačilo servo príliš silno do mechaniky
 
 # Špecifické limity pre Lakeť (aby pri down pohybe netlačil do samotného ramena)
 # 180 je horná (vystretá) poloha. Dolnú polohu obmedzíme, aby neschádzal príliš nízko.
