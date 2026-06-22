@@ -9,7 +9,7 @@ This file contains memory, context, and specific instructions for Gemini CLI whe
 *   **Wrist:** Connected to channel 13 (`WRIST_CHANNEL`).
 *   **Gripper:** Connected to channel 15 (`GRIP_CHANNEL`). Replaced during session. Requires absolute angle jumps (80° to 160°) for maximum torque to overcome mechanical friction.
 *   **Base Rotation:** Connected to channel 8 (`ROTATE_CHANNEL`).
-*   **Camera:** **PENDING HARDWARE**. Pan/Tilt servos are on channels 9 and 7.
+*   **Camera:** Raspberry Pi Camera Module 3 Wide (CSI). Pan/Tilt servos are on channels 9 and 7. Robust software integration added with Picamera2 and OpenCV fallback.
 *   **Power / Hardware Lock:** The PCA9685 and DC Motors share a power supply. Simultaneous operation causes severe brownouts and I2C corruption, which previously destroyed a servo. **Fix:** A `hardware_lock` (Threading Lock) is implemented in `app.py` to serialize all motor and servo commands. Never operate wheels and arms concurrently.
 *   **Payload Limitation:** The current physical design (lever arm lengths) puts the elbow MG996R servo at its absolute stall torque limit just carrying the wrist and gripper. Attempting to lift a 93g payload (wristwatch) caused the elbow servo to critically overheat again. **A mechanical redesign (shortening the forearm/bicep or adding counter-springs) is required before attempting to lift objects.**
 
@@ -22,5 +22,5 @@ This file contains memory, context, and specific instructions for Gemini CLI whe
 
 ## Future Tasks / TODOs
 1.  **Safe Park Sequence:** Manually move the arm into a safe resting pose, record the specific angles for all 4 joints, and implement a sequential `park_arm()` routine (e.g., Wrist straight -> Elbow tucked -> Shoulder back) to avoid self-collision.
-2.  **Camera Setup:** Connect the camera, install the mount, and re-enable `picamera2`/`cv2` dependencies in the run command if necessary. Test Pan/Tilt.
+2.  **Camera Setup:** Software support implemented. Added robust fallback between Picamera2 and OpenCV VideoCapture, and created a `diagnose_camera.py` script. The physical camera needs to be enabled in `/boot/firmware/config.txt` and verified on RPi using the diagnostic script.
 3.  **Pre-programmed Poses:** Implement functions in `arm.py` (and corresponding UI buttons) for complex poses. E.g., `pose_rest()`, `pose_ready()`, `pose_grab()`.
