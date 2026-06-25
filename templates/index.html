@@ -196,31 +196,26 @@
 
         /* Tlačidlo núdzového uvoľnenia */
         .release-btn {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            pointer-events: auto;
             background: rgba(255, 40, 40, 0.2);
             color: #ff5555;
             border: 1px solid rgba(255, 40, 40, 0.4);
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 12px;
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-size: 13px;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 1px;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             box-shadow: 0 4px 15px rgba(255,0,0,0.1);
             transition: all 0.2s;
             cursor: pointer;
+            margin-bottom: 8px;
+            width: 100%;
         }
 
         .release-btn:active {
             background: rgba(255, 40, 40, 0.8);
             color: white;
-            transform: translateX(-50%) scale(0.95);
+            transform: scale(0.95);
         }
 
         /* Skrytie posuvníkov */
@@ -234,8 +229,7 @@
     <!-- Video na pozadí -->
     <img src="/video_feed" class="video-background" alt="Video Stream" />
 
-    <!-- Tlačidlo v strede hore -->
-    <button class="release-btn" onclick="releaseServos()">⚠️ Uvoľniť Servá</button>
+
 
     <!-- Overlay s ovládacími prvkami -->
     <div class="ui-overlay">
@@ -264,6 +258,7 @@
 
         <!-- Pravý palec: Rameno -->
         <div class="panel right-panel">
+            <button class="release-btn" onclick="releaseServos()">⚠️ Uvoľniť Servá</button>
             <div class="arm-grid">
                 
                 <div class="arm-row-title">Základňa (Base)</div>
