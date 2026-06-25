@@ -1,35 +1,304 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Robot Control</title>
+    <!-- Uzamknutie škálovania a fixácia na mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Robot Ovládač</title>
+    <!-- Moderný font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 20px;
-        }
-        button {
-            font-size: 20px;
-            padding: 15px;
-            margin: 10px;
-            cursor: pointer;
+        * {
+            box-sizing: border-box;
             user-select: none;
             -webkit-user-select: none;
-            touch-action: none;
+            -webkit-touch-callout: none;
+            margin: 0;
+            padding: 0;
         }
-        button:active {
-            background-color: #ccc;
+
+        body, html {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden; /* Zákaz scrollovania */
+            background-color: #0c0c0c;
+            font-family: 'Inter', sans-serif;
+            color: #fff;
+            /* Ak zariadenie podporuje safe-areas (napr. iPhone Notch), využi ich */
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+        }
+
+        /* Stream z kamery na pozadí */
+        .video-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            /* Použijeme contain, aby kamera nebola orezaná, okraje budú čierne a prekryté sklom */
+            object-fit: contain; 
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Hlavný obal pre ovládacie panely */
+        .ui-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 2;
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 30px;
+            pointer-events: none; /* Umožní prejsť klikom mimo panelov (aj keď tu nehrá rolu) */
+        }
+
+        .panel {
+            pointer-events: auto; /* Znovu povolí klikanie na panely */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100%;
+        }
+
+        /* Ľavá strana (D-Pads) */
+        .left-panel {
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* D-Pad Štýl */
+        .d-pad {
+            display: grid;
+            grid-template-columns: repeat(3, 65px);
+            grid-template-rows: repeat(3, 65px);
+            gap: 6px;
+            background: rgba(30, 30, 30, 0.4);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 15px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .d-pad.small {
+            grid-template-columns: repeat(3, 40px);
+            grid-template-rows: repeat(3, 40px);
+            padding: 10px;
+            margin-bottom: -10px;
+        }
+
+        .d-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            color: white;
+            font-size: 24px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 2px 5px rgba(255,255,255,0.1), 0 4px 6px rgba(0,0,0,0.3);
+            transition: all 0.05s ease-out;
+            cursor: pointer;
+        }
+
+        .d-pad.small .d-btn {
+            font-size: 16px;
+            border-radius: 8px;
+        }
+
+        .d-btn:active, .d-btn.active {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(0.92);
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        /* Pozície v kríži */
+        .d-pad .up { grid-column: 2; grid-row: 1; }
+        .d-pad .left { grid-column: 1; grid-row: 2; }
+        .d-pad .right { grid-column: 3; grid-row: 2; }
+        .d-pad .down { grid-column: 2; grid-row: 3; }
+
+        /* Popisky D-Padov */
+        .pad-label {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.6);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* Pravá strana (Rameno) */
+        .right-panel {
+            background: rgba(30, 30, 30, 0.4);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 15px 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            max-height: 95vh;
+            overflow-y: auto; /* Ak by bol displej primalý */
+        }
+
+        .arm-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px 12px;
+            align-items: center;
+        }
+
+        .arm-row-title {
+            grid-column: span 2;
+            color: rgba(255,255,255,0.5);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: -4px;
+            margin-top: 5px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .arm-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            color: white;
+            padding: 12px 5px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.05s ease-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            cursor: pointer;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.05), 0 2px 4px rgba(0,0,0,0.2);
+            white-space: nowrap;
+        }
+
+        .arm-btn:active, .arm-btn.active {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(0.95);
+        }
+
+        /* Tlačidlo núdzového uvoľnenia */
+        .release-btn {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            pointer-events: auto;
+            background: rgba(255, 40, 40, 0.2);
+            color: #ff5555;
+            border: 1px solid rgba(255, 40, 40, 0.4);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(255,0,0,0.1);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .release-btn:active {
+            background: rgba(255, 40, 40, 0.8);
+            color: white;
+            transform: translateX(-50%) scale(0.95);
+        }
+
+        /* Skrytie posuvníkov */
+        ::-webkit-scrollbar {
+            display: none;
         }
     </style>
+</head>
+<body>
+
+    <!-- Video na pozadí -->
+    <img src="/video_feed" class="video-background" alt="Video Stream" />
+
+    <!-- Tlačidlo v strede hore -->
+    <button class="release-btn" onclick="releaseServos()">⚠️ Uvoľniť Servá</button>
+
+    <!-- Overlay s ovládacími prvkami -->
+    <div class="ui-overlay">
+        
+        <!-- Ľavý palec: Pohyb a Kamera -->
+        <div class="panel left-panel">
+            
+            <!-- Kamera D-Pad -->
+            <div class="d-pad small">
+                <div class="pad-label">Kamera</div>
+                <button class="d-btn up action-btn" data-action="cam_up">▲</button>
+                <button class="d-btn left action-btn" data-action="cam_left">◀</button>
+                <button class="d-btn right action-btn" data-action="cam_right">▶</button>
+                <button class="d-btn down action-btn" data-action="cam_down">▼</button>
+            </div>
+            
+            <!-- Podvozok D-Pad -->
+            <div class="d-pad">
+                <div class="pad-label">Jazda</div>
+                <button class="d-btn up action-btn" data-action="forward">W</button>
+                <button class="d-btn left action-btn" data-action="left">A</button>
+                <button class="d-btn right action-btn" data-action="right">D</button>
+                <button class="d-btn down action-btn" data-action="backward">S</button>
+            </div>
+        </div>
+
+        <!-- Pravý palec: Rameno -->
+        <div class="panel right-panel">
+            <div class="arm-grid">
+                
+                <div class="arm-row-title">Základňa (Base)</div>
+                <button class="arm-btn action-btn" data-action="rotate_left">⬅️ Vľavo</button>
+                <button class="arm-btn action-btn" data-action="rotate_right">Vpravo ➡️</button>
+
+                <div class="arm-row-title">Rameno (Shoulder)</div>
+                <button class="arm-btn action-btn" data-action="arm_up">⬆️ Hore</button>
+                <button class="arm-btn action-btn" data-action="arm_down">⬇️ Dole</button>
+
+                <div class="arm-row-title">Lakeť (Elbow)</div>
+                <button class="arm-btn action-btn" data-action="elbow_up">⬆️ Hore</button>
+                <button class="arm-btn action-btn" data-action="elbow_down">⬇️ Dole</button>
+
+                <div class="arm-row-title">Zápästie (Wrist)</div>
+                <button class="arm-btn action-btn" data-action="wrist_up">⬆️ Hore</button>
+                <button class="arm-btn action-btn" data-action="wrist_down">⬇️ Dole</button>
+
+                <div class="arm-row-title">Klepeto (Grip)</div>
+                <button class="arm-btn action-btn" data-action="grip_open">🔓 Otvor</button>
+                <button class="arm-btn action-btn" data-action="grip_close">🔒 Zavri</button>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JavaScript Logika -->
     <script>
         let activeAction = null;
         let isFetching = false;
 
         function sendCommand(action) {
             return fetch(`/command/${action}`, { method: 'POST' })
-                .catch(error => console.error('Error:', error));
+                .catch(error => console.error('API Error:', error));
         }
 
         async function actionLoop() {
@@ -38,78 +307,65 @@
             await sendCommand(activeAction);
             isFetching = false;
             
-            // Ak je tlačidlo stále stlačené, opakujeme akciu s malým oneskorením
+            // Loop while action is active
             if (activeAction) {
                 setTimeout(actionLoop, 20);
             }
         }
 
-        function startAction(action, event) {
-            if (event && event.cancelable) event.preventDefault(); // Zabraňuje zdvojeniu touch/mouse eventov
+        function startAction(action, btnElement, event) {
+            if (event && event.cancelable) event.preventDefault(); 
+            btnElement.classList.add('active'); // Vizuálny feedback
             if (activeAction !== action) {
                 activeAction = action;
                 actionLoop();
             }
         }
 
-        function stopAction(event) {
+        function stopAction(btnElement, event) {
             if (event && event.cancelable) event.preventDefault();
-            activeAction = null;
-            sendCommand('stop');
+            btnElement.classList.remove('active');
+            if (activeAction) {
+                activeAction = null;
+                sendCommand('stop');
+            }
         }
 
+        // Hromadné priradenie eventov (aby sa eliminovali duplicity touch/mouse)
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            const action = btn.dataset.action;
+            
+            // Start
+            btn.addEventListener('mousedown', (e) => startAction(action, btn, e));
+            btn.addEventListener('touchstart', (e) => startAction(action, btn, e));
+            
+            // Stop
+            btn.addEventListener('mouseup', (e) => stopAction(btn, e));
+            btn.addEventListener('mouseleave', (e) => stopAction(btn, e));
+            btn.addEventListener('touchend', (e) => stopAction(btn, e));
+            btn.addEventListener('touchcancel', (e) => stopAction(btn, e));
+            
+            // Blokovanie menu pri dlhom podržaní na mobile
+            btn.addEventListener('contextmenu', e => e.preventDefault());
+        });
+
+        // Samostatná funkcia pre uvoľnenie serv
         function releaseServos() {
+            const btn = document.querySelector('.release-btn');
+            btn.innerText = "Uvoľňujem...";
+            
             fetch('/release_servos', { method: 'POST' })
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data.message);
-                    alert(data.message);
+                    btn.innerText = "Uvoľnené!";
+                    setTimeout(() => btn.innerText = "⚠️ Uvoľniť Servá", 1500);
                 })
                 .catch(error => {
                     console.error('Chyba:', error);
-                    alert('Chyba pri uvoľnení servomotorov.');
+                    btn.innerText = "Chyba!";
+                    setTimeout(() => btn.innerText = "⚠️ Uvoľniť Servá", 1500);
                 });
         }
     </script>
-</head>
-<body>
-    <h1>Robot Control</h1>
-
-    <h2>Video Stream</h2>
-    <img src="/video_feed" width="640" height="480" alt="Video Feed" />
-
-    <h2>Motors</h2>
-    <button onmousedown="startAction('forward', event)" onmouseup="stopAction(event)" ontouchstart="startAction('forward', event)" ontouchend="stopAction(event)">Forward</button>
-    <br>
-    <button onmousedown="startAction('left', event)" onmouseup="stopAction(event)" ontouchstart="startAction('left', event)" ontouchend="stopAction(event)">Left</button>
-    <button onmousedown="startAction('right', event)" onmouseup="stopAction(event)" ontouchstart="startAction('right', event)" ontouchend="stopAction(event)">Right</button>
-    <br>
-    <button onmousedown="startAction('backward', event)" onmouseup="stopAction(event)" ontouchstart="startAction('backward', event)" ontouchend="stopAction(event)">Backward</button>
-
-    <h2>Arm</h2>
-    <button onmousedown="startAction('rotate_left', event)" onmouseup="stopAction(event)" ontouchstart="startAction('rotate_left', event)" ontouchend="stopAction(event)">Rotate Left</button>
-    <button onmousedown="startAction('rotate_right', event)" onmouseup="stopAction(event)" ontouchstart="startAction('rotate_right', event)" ontouchend="stopAction(event)">Rotate Right</button>
-    <br>
-    <button onmousedown="startAction('arm_up', event)" onmouseup="stopAction(event)" ontouchstart="startAction('arm_up', event)" ontouchend="stopAction(event)">Arm Up</button>
-    <button onmousedown="startAction('arm_down', event)" onmouseup="stopAction(event)" ontouchstart="startAction('arm_down', event)" ontouchend="stopAction(event)">Arm Down</button>
-    <br>
-    <button onmousedown="startAction('elbow_up', event)" onmouseup="stopAction(event)" ontouchstart="startAction('elbow_up', event)" ontouchend="stopAction(event)">Elbow Up</button>
-    <button onmousedown="startAction('elbow_down', event)" onmouseup="stopAction(event)" ontouchstart="startAction('elbow_down', event)" ontouchend="stopAction(event)">Elbow Down</button>
-    <br>
-    <button onmousedown="startAction('wrist_up', event)" onmouseup="stopAction(event)" ontouchstart="startAction('wrist_up', event)" ontouchend="stopAction(event)">Wrist Up</button>
-    <button onmousedown="startAction('wrist_down', event)" onmouseup="stopAction(event)" ontouchstart="startAction('wrist_down', event)" ontouchend="stopAction(event)">Wrist Down</button>
-    <br>
-    <button onmousedown="startAction('grip_close', event)" onmouseup="stopAction(event)" ontouchstart="startAction('grip_close', event)" ontouchend="stopAction(event)">Grip Close</button>
-    <button onmousedown="startAction('grip_open', event)" onmouseup="stopAction(event)" ontouchstart="startAction('grip_open', event)" ontouchend="stopAction(event)">Grip Open</button>
-    <br>
-    <button onclick="releaseServos()">Release Servos</button>
-
-    <h2>Camera</h2>
-    <button onmousedown="startAction('cam_up', event)" onmouseup="stopAction(event)" ontouchstart="startAction('cam_up', event)" ontouchend="stopAction(event)">Camera Up</button>
-    <button onmousedown="startAction('cam_down', event)" onmouseup="stopAction(event)" ontouchstart="startAction('cam_down', event)" ontouchend="stopAction(event)">Camera Down</button>
-    <br>
-    <button onmousedown="startAction('cam_left', event)" onmouseup="stopAction(event)" ontouchstart="startAction('cam_left', event)" ontouchend="stopAction(event)">Camera Left</button>
-    <button onmousedown="startAction('cam_right', event)" onmouseup="stopAction(event)" ontouchstart="startAction('cam_right', event)" ontouchend="stopAction(event)">Camera Right</button>
 </body>
 </html>
-
