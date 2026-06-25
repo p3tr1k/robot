@@ -108,8 +108,6 @@ def capture_frames():
         try:
             if picam2:
                 frame = picam2.capture_array()
-                # Rotácia 180° priamo v CV2
-                frame = cv2.rotate(frame, cv2.ROTATE_180)
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             elif use_opencv_cam and cap:
                 ret, frame = cap.read()
@@ -117,8 +115,7 @@ def capture_frames():
                     logger.warning("Nepodarilo sa načítať snímku z OpenCV kamery.")
                     time.sleep(0.1)
                     continue
-                # Prehodenie 180° (ak je kamera namontovaná hore nohami na pan/tilt)
-                frame = cv2.rotate(frame, cv2.ROTATE_180)
+                pass # Rotacia bola odstranena podla ziadosti uuzivatela
             else:
                 break
             

@@ -25,8 +25,8 @@ SHOULDER_B = 11
 ELBOW_CHANNEL = 12
 WRIST_CHANNEL = 13
 GRIP_CHANNEL = 15
-PAN_CHANNEL = 9
-TILT_CHANNEL = 7 # Posunuté z 8
+PAN_CHANNEL = 0
+TILT_CHANNEL = 1 # Opravene podla realneho spravania
 
 # Nastavenie rozsahov
 if kit:
@@ -36,6 +36,8 @@ if kit:
     kit.servo[ELBOW_CHANNEL].set_pulse_width_range(500, 2550)
     kit.servo[WRIST_CHANNEL].set_pulse_width_range(500, 2550)
     kit.servo[GRIP_CHANNEL].set_pulse_width_range(500, 2500) # Rozšírené na štandard pre väčší rozsah pohybu
+    kit.servo[PAN_CHANNEL].set_pulse_width_range(500, 2500)
+    kit.servo[TILT_CHANNEL].set_pulse_width_range(500, 2500)
 
 # Bezpečné limity pre MG996R (prevencia bzučania a mechanického namáhania)
 SAFE_MIN = 0 # Odomknuté na absolútne minimum
