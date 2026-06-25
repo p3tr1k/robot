@@ -14,6 +14,7 @@ This file contains memory, context, and specific instructions for Gemini CLI whe
 *   **Payload Limitation:** The current physical design (lever arm lengths) puts the elbow MG996R servo at its absolute stall torque limit just carrying the wrist and gripper. Attempting to lift a 93g payload (wristwatch) caused the elbow servo to critically overheat again. **A mechanical redesign (shortening the forearm/bicep or adding counter-springs) is required before attempting to lift objects.**
 
 ## Software Design Rules implemented
+*   **Web UI (Mobile Gamepad):** The `index.html` is designed as a landscape mobile gamepad with glassmorphism, transparent video feed background, and strict event handling (touch/mouse). Driving & Camera pan on the left, Arm controls on the right.
 *   **Movement Smoothing:** Web UI sends commands via an async fetch lock every 100ms (preventing backlog). `arm.py` uses `STEP = 2` for the arm.
 *   **Safety Constraints:** Explicit `SAFE_MIN` and `SAFE_MAX` bounds are implemented for specific joints (e.g., Elbow: 30-180, Gripper: 80-160) to prevent mechanical singularities, self-collisions, and servo stalls.
 *   **State Tracking:** `arm.py` uses `current_angles` to remember servo positions.
