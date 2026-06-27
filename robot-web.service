@@ -1,0 +1,19 @@
+[Unit]
+Description=Robot Web Server (Flask + UV)
+# Počkáme na naštartovanie siete a NordVPN
+After=network-online.target nordvpnd.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=robot
+WorkingDirectory=/home/robot/robot
+# Nastavíme cestu, aby systém našiel príkaz 'uv' (zvyčajne býva v .local/bin alebo .cargo/bin)
+Environment="PATH=/home/robot/.local/bin:/home/robot/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ExecStart=/usr/bin/env uv run app.py
+# Ak by server náhodou spadol, automaticky ho reštartuje
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
