@@ -57,6 +57,10 @@ ELBOW_SAFE_MAX = 180
 ROTATE_SAFE_MIN = 90 # Ešte viac skrátené o 15 stupňov doľava (na 90)
 ROTATE_SAFE_MAX = 155 # Posunuté o 10 stupňov doprava
 
+# Limity pre rotáciu kamery (PAN) - obmedzené na 110 stupňov
+PAN_SAFE_MIN = 35 # (90 - 55)
+PAN_SAFE_MAX = 145 # (90 + 55)
+
 # Predvolené (stredové/oddychové) uhly
 default_angles = {
     ROTATE_CHANNEL: 100,
@@ -224,12 +228,14 @@ def schedule_camera_release():
 # Proxy funkcie pre kameru (aby sme nemuseli prepisovať app.py)
 def cam_left():
     curr = current_angles.get(PAN_CHANNEL, 90)
-    move_servo(PAN_CHANNEL, curr + STEP)
+    safe_angle = min(PAN_SAFE_MAX, curr + STEP)
+    move_servo(PAN_CHANNEL, safe_angle)
     schedule_camera_release()
 
 def cam_right():
     curr = current_angles.get(PAN_CHANNEL, 90)
-    move_servo(PAN_CHANNEL, curr - STEP)
+    safe_angle = max(PAN_SAFE_MIN, curr - STEP)
+    move_servo(PAN_CHANNEL, safe_angle)
     schedule_camera_release()
 
 def cam_up():
