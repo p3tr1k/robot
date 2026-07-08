@@ -52,7 +52,7 @@
             z-index: 2;
             display: flex;
             justify-content: space-between;
-            padding: 15px 30px;
+            padding: 5px 20px; /* Menší padding pre viac miesta na výšku */
             pointer-events: none; /* Umožní prejsť klikom mimo panelov (aj keď tu nehrá rolu) */
         }
 
@@ -145,30 +145,29 @@
             background: rgba(30, 30, 30, 0.4);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
-            padding: 12px 18px; /* Rozšírené o ca 16px */
+            padding: 8px 12px; /* Mierne zúžené oproti predošlému */
             border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            max-height: 98dvh;
-            overflow-y: auto; /* Ak by bol displej primalý */
-            /* Zrušený scale pre návrat k 100% veľkosti */
+            max-height: 95dvh;
+            overflow-y: auto; /* Záchrana pri primalých obrazovkách */
         }
 
         .arm-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 6px 15px; /* Väčšie medzery do šírky (pridá cca 10px) */
+            gap: 2px 10px; /* Oveľa menšie medzery na výšku, mierne užšie na šírku */
             align-items: center;
         }
 
         .arm-row-title {
             grid-column: span 2;
             color: rgba(255,255,255,0.5);
-            font-size: 9px; /* Zmenšený font nadpisov */
+            font-size: 9px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: -2px;
-            margin-top: 2px;
+            margin-bottom: -4px; /* Viac natlačené */
+            margin-top: 1px;
             text-align: center;
             font-weight: 600;
         }
@@ -176,10 +175,10 @@
         .arm-btn {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 10px;
+            border-radius: 8px;
             color: white;
-            padding: 10px 25px; /* Výrazne širšie tlačidlá (pridá cca 40px každému) */
-            font-size: 20px; /* Zväčšené emoji pre lepší klik */
+            padding: 6px 15px; /* Výrazne ubraté na výške aj trochu na šírke */
+            font-size: 18px; /* Mierne zmenšené emoji */
             font-weight: 600;
             transition: all 0.05s ease-out;
             display: flex;
@@ -201,9 +200,9 @@
             background: rgba(255, 40, 40, 0.2);
             color: #ff5555;
             border: 1px solid rgba(255, 40, 40, 0.4);
-            padding: 10px 10px; /* Širšie */
-            border-radius: 10px;
-            font-size: 20px; /* Zväčšené Emoji */
+            padding: 6px 10px; /* Oveľa nižšie tlačidlá na výšku */
+            border-radius: 8px;
+            font-size: 18px; /* Zmenšené Emoji */
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -263,7 +262,7 @@
 
         <!-- Pravý palec: Rameno -->
         <div class="panel right-panel">
-            <div style="display: flex; gap: 15px; margin-bottom: 12px;">
+            <div style="display: flex; gap: 10px; margin-bottom: 6px;">
                 <button class="release-btn park-btn" onclick="parkArm()" style="background: rgba(40, 150, 255, 0.2); color: #55aaff; border-color: rgba(40, 150, 255, 0.4);" title="Parkovať">🅿️</button>
                 <button class="release-btn" onclick="releaseServos()" title="Uvoľniť">⚠️</button>
             </div>
