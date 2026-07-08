@@ -73,13 +73,13 @@
         /* D-Pad Štýl */
         .d-pad {
             display: grid;
-            grid-template-columns: repeat(3, 65px);
-            grid-template-rows: repeat(3, 65px);
-            gap: 6px;
+            grid-template-columns: repeat(3, 52px); /* Zmenšené o 20% (z 65px) */
+            grid-template-rows: repeat(3, 52px);
+            gap: 5px;
             background: rgba(30, 30, 30, 0.4);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
-            padding: 15px;
+            padding: 12px;
             border-radius: 50%;
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
@@ -87,18 +87,18 @@
         }
 
         .d-pad.small {
-            grid-template-columns: repeat(3, 40px);
-            grid-template-rows: repeat(3, 40px);
-            padding: 10px;
-            margin-bottom: -10px;
+            grid-template-columns: repeat(3, 35px); /* Zmenšené proporcionálne */
+            grid-template-rows: repeat(3, 35px);
+            padding: 8px;
+            margin-bottom: -8px;
         }
 
         .d-btn {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 12px;
+            border-radius: 10px;
             color: white;
-            font-size: 24px;
+            font-size: 20px; /* Zmenšené z 24px */
             font-weight: 800;
             display: flex;
             align-items: center;
@@ -144,8 +144,8 @@
             background: rgba(30, 30, 30, 0.4);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
-            padding: 15px 20px;
-            border-radius: 20px;
+            padding: 10px 12px; /* Zmenšený padding */
+            border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             max-height: 95vh;
@@ -155,18 +155,18 @@
         .arm-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px 12px;
+            gap: 6px 8px; /* Zmenšené medzery */
             align-items: center;
         }
 
         .arm-row-title {
             grid-column: span 2;
             color: rgba(255,255,255,0.5);
-            font-size: 11px;
+            font-size: 10px; /* Zmenšený font nadpisov */
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: -4px;
-            margin-top: 5px;
+            margin-bottom: -3px;
+            margin-top: 4px;
             text-align: center;
             font-weight: 600;
         }
@@ -174,16 +174,16 @@
         .arm-btn {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 12px;
+            border-radius: 10px;
             color: white;
-            padding: 12px 5px;
-            font-size: 13px;
+            padding: 10px 5px; /* Výrazne zmenšený padding (výška) */
+            font-size: 16px; /* Zväčšený font pre samotné EMOJI */
             font-weight: 600;
             transition: all 0.05s ease-out;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 5px;
+            gap: 3px;
             cursor: pointer;
             box-shadow: inset 0 1px 2px rgba(255,255,255,0.05), 0 2px 4px rgba(0,0,0,0.2);
             white-space: nowrap;
@@ -199,9 +199,9 @@
             background: rgba(255, 40, 40, 0.2);
             color: #ff5555;
             border: 1px solid rgba(255, 40, 40, 0.4);
-            padding: 10px 15px;
-            border-radius: 12px;
-            font-size: 13px;
+            padding: 8px 10px; /* Zmenšené z 10x15 */
+            border-radius: 10px;
+            font-size: 11px; /* Zmenšené z 13 */
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -266,24 +266,24 @@
             <div class="arm-grid">
                 
                 <div class="arm-row-title">Základňa (Base)</div>
-                <button class="arm-btn action-btn" data-action="rotate_left">⬅️ Vľavo</button>
-                <button class="arm-btn action-btn" data-action="rotate_right">Vpravo ➡️</button>
+                <button class="arm-btn action-btn" data-action="rotate_left">⬅️</button>
+                <button class="arm-btn action-btn" data-action="rotate_right">➡️</button>
 
                 <div class="arm-row-title">Rameno (Shoulder)</div>
-                <button class="arm-btn action-btn" data-action="arm_up">⬆️ Hore</button>
-                <button class="arm-btn action-btn" data-action="arm_down">⬇️ Dole</button>
+                <button class="arm-btn action-btn" data-action="arm_up">⬆️</button>
+                <button class="arm-btn action-btn" data-action="arm_down">⬇️</button>
 
                 <div class="arm-row-title">Lakeť (Elbow)</div>
-                <button class="arm-btn action-btn" data-action="elbow_up">⬆️ Hore</button>
-                <button class="arm-btn action-btn" data-action="elbow_down">⬇️ Dole</button>
+                <button class="arm-btn action-btn" data-action="elbow_up">⬆️</button>
+                <button class="arm-btn action-btn" data-action="elbow_down">⬇️</button>
 
                 <div class="arm-row-title">Zápästie (Wrist)</div>
-                <button class="arm-btn action-btn" data-action="wrist_up">⬆️ Hore</button>
-                <button class="arm-btn action-btn" data-action="wrist_down">⬇️ Dole</button>
+                <button class="arm-btn action-btn" data-action="wrist_up">⬆️</button>
+                <button class="arm-btn action-btn" data-action="wrist_down">⬇️</button>
 
                 <div class="arm-row-title">Klepeto (Grip)</div>
-                <button class="arm-btn action-btn" data-action="grip_open">🔓 Otvor</button>
-                <button class="arm-btn action-btn" data-action="grip_close">🔒 Zavri</button>
+                <button class="arm-btn action-btn" data-action="grip_open">🔓</button>
+                <button class="arm-btn action-btn" data-action="grip_close">🔒</button>
 
             </div>
         </div>
