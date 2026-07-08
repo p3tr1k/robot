@@ -202,22 +202,45 @@ def grip_close():
     move_servo(GRIP_CHANNEL, GRIP_SAFE_MAX)
     schedule_gripper_release()
 
+cam_timer = None
+
+def _auto_release_camera():
+    if not kit: return
+    try:
+        kit.servo[PAN_CHANNEL].angle = None
+        kit.servo[TILT_CHANNEL].angle = None
+        logger.info("Servá kamery automaticky uvoľnené proti traseniu.")
+    except Exception as e:
+        logger.error(f"Chyba pri uvoľňovaní kamery: {e}")
+
+def schedule_camera_release():
+    global cam_timer
+    if cam_timer:
+        cam_timer.cancel()
+    # 0.3 sekundy po uvoľnení tlačidla sa vypne PWM signál do serva
+    cam_timer = threading.Timer(0.3, _auto_release_camera)
+    cam_timer.start()
+
 # Proxy funkcie pre kameru (aby sme nemuseli prepisovať app.py)
 def cam_left():
     curr = current_angles.get(PAN_CHANNEL, 90)
     move_servo(PAN_CHANNEL, curr + STEP)
+    schedule_camera_release()
 
 def cam_right():
     curr = current_angles.get(PAN_CHANNEL, 90)
     move_servo(PAN_CHANNEL, curr - STEP)
+    schedule_camera_release()
 
 def cam_up():
     curr = current_angles.get(TILT_CHANNEL, 90)
     move_servo(TILT_CHANNEL, curr - STEP)
+    schedule_camera_release()
 
 def cam_down():
     curr = current_angles.get(TILT_CHANNEL, 90)
     move_servo(TILT_CHANNEL, curr + STEP)
+    schedule_camera_release()
 
 def park_arm():
     """
