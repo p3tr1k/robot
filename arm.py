@@ -70,7 +70,7 @@ default_angles = {
     WRIST_CHANNEL: 90,
     GRIP_CHANNEL: 120, # Nastavený na stred nového rozsahu
     PAN_CHANNEL: 100,  # Posunutý stred o 10° doľava kvôli mechanickému posunu
-    TILT_CHANNEL: 110  # Posunuté o 20° nadol pre lepšie parkovanie kamery
+    TILT_CHANNEL: 130  # Posunuté o ďalších 20° nadol pre lepšie parkovanie kamery (spolu o 40°)
 }
 
 # Pamäť poslednej polohy (aby sme po release nezačínali vždy od 90)
