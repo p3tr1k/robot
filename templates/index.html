@@ -145,20 +145,19 @@
             background: rgba(30, 30, 30, 0.4);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
-            padding: 8px 10px; /* Ešte menší padding */
+            padding: 12px 18px; /* Rozšírené o ca 16px */
             border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             max-height: 98dvh;
             overflow-y: auto; /* Ak by bol displej primalý */
-            transform: scale(0.9); /* Pre istotu mierne zmenšenie celého panelu, aby sa bezpečne zmestil */
-            transform-origin: right center;
+            /* Zrušený scale pre návrat k 100% veľkosti */
         }
 
         .arm-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 4px 6px; /* Zmenšené medzery */
+            gap: 6px 15px; /* Väčšie medzery do šírky (pridá cca 10px) */
             align-items: center;
         }
 
@@ -177,10 +176,10 @@
         .arm-btn {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 8px;
+            border-radius: 10px;
             color: white;
-            padding: 8px 4px; /* Ešte viac zmenšený padding */
-            font-size: 16px; 
+            padding: 10px 25px; /* Výrazne širšie tlačidlá (pridá cca 40px každému) */
+            font-size: 20px; /* Zväčšené emoji pre lepší klik */
             font-weight: 600;
             transition: all 0.05s ease-out;
             display: flex;
@@ -197,21 +196,20 @@
             transform: scale(0.95);
         }
 
-        /* Tlačidlo núdzového uvoľnenia */
+        /* Tlačidlá vrch (Park, Uvoľniť) */
         .release-btn {
             background: rgba(255, 40, 40, 0.2);
             color: #ff5555;
             border: 1px solid rgba(255, 40, 40, 0.4);
-            padding: 6px 6px; /* Štvorcové zmenšené */
-            border-radius: 8px;
-            font-size: 16px; /* Písmo pre emoji vnútri */
+            padding: 10px 10px; /* Širšie */
+            border-radius: 10px;
+            font-size: 20px; /* Zväčšené Emoji */
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 1px;
             box-shadow: 0 4px 15px rgba(255,0,0,0.1);
             transition: all 0.2s;
             cursor: pointer;
-            margin-bottom: 4px;
             width: 100%;
             display: flex;
             align-items: center;
@@ -265,9 +263,9 @@
 
         <!-- Pravý palec: Rameno -->
         <div class="panel right-panel">
-            <div style="display: flex; gap: 6px; margin-bottom: 4px;">
-                <button class="release-btn park-btn" onclick="parkArm()" style="background: rgba(40, 150, 255, 0.2); color: #55aaff; border-color: rgba(40, 150, 255, 0.4); margin-bottom: 0;" title="Parkovať">🅿️</button>
-                <button class="release-btn" onclick="releaseServos()" style="margin-bottom: 0;" title="Uvoľniť">⚠️</button>
+            <div style="display: flex; gap: 15px; margin-bottom: 12px;">
+                <button class="release-btn park-btn" onclick="parkArm()" style="background: rgba(40, 150, 255, 0.2); color: #55aaff; border-color: rgba(40, 150, 255, 0.4);" title="Parkovať">🅿️</button>
+                <button class="release-btn" onclick="releaseServos()" title="Uvoľniť">⚠️</button>
             </div>
             <div class="arm-grid">
                 
