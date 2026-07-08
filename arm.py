@@ -53,6 +53,10 @@ GRIP_SAFE_MAX = 150 # Zvýšené zo 140 na 150 pre pevnejšie zovretie
 ELBOW_SAFE_MIN = 30 # Upraviteľný limit, aby lakeť neschádzal príliš dole
 ELBOW_SAFE_MAX = 180
 
+# Špecifické limity pre Rotáciu základne (aby nenarážalo do kamery na chrbte)
+ROTATE_SAFE_MIN = 40 # Limit pre rotáciu vľavo/vzad
+ROTATE_SAFE_MAX = 140 # Limit pre rotáciu vpravo/vzad
+
 # Predvolené (stredové/oddychové) uhly
 default_angles = {
     ROTATE_CHANNEL: 100,
@@ -122,12 +126,14 @@ STEP = 2 # Zvýšené z 1 na 2 kvôli pomalšiemu intervalu na webe (100ms)
 GRIP_STEP = 5 # Umiernený krok, 10 bolo po odstránení lagov priveľa
 
 def rotate_left():
-    curr = current_angles.get(ROTATE_CHANNEL, 90)
-    move_servo(ROTATE_CHANNEL, curr - STEP) # Invertované
+    curr = current_angles.get(ROTATE_CHANNEL, 100)
+    safe_angle = max(ROTATE_SAFE_MIN, curr - STEP)
+    move_servo(ROTATE_CHANNEL, safe_angle)
 
 def rotate_right():
-    curr = current_angles.get(ROTATE_CHANNEL, 90)
-    move_servo(ROTATE_CHANNEL, curr + STEP) # Invertované
+    curr = current_angles.get(ROTATE_CHANNEL, 100)
+    safe_angle = min(ROTATE_SAFE_MAX, curr + STEP)
+    move_servo(ROTATE_CHANNEL, safe_angle)
 
 def arm_up():
     curr_shoulder = current_angles.get(SHOULDER_A, 10)
