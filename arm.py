@@ -70,7 +70,7 @@ default_angles = {
     WRIST_CHANNEL: 90,
     GRIP_CHANNEL: 120, # Nastavený na stred nového rozsahu
     PAN_CHANNEL: 100,  # Posunutý stred o 10° doľava kvôli mechanickému posunu
-    TILT_CHANNEL: 90
+    TILT_CHANNEL: 110  # Posunuté o 20° nadol pre lepšie parkovanie kamery
 }
 
 # Pamäť poslednej polohy (aby sme po release nezačínali vždy od 90)
@@ -260,37 +260,37 @@ def park_arm():
     import time
     logger.info("Začínam parkovaciu sekvenciu...")
     
-    # Krok 1: Vycentrovať základňu (zamedzí bočným kolíziám)
-    target_rot = default_angles[ROTATE_CHANNEL]
+    # Krok 1: Vycentrovať základňu (zamedzí bočným kolíziám) s offsetom 20° doprava
+    target_rot = default_angles[ROTATE_CHANNEL] + 20
     curr_rot = current_angles.get(ROTATE_CHANNEL, target_rot)
     while int(curr_rot) != target_rot:
         curr_rot += 1 if curr_rot < target_rot else -1
         move_servo(ROTATE_CHANNEL, curr_rot)
         time.sleep(0.01)
         
-    # Krok 2: Vystrieť lakeť a zápästie nahor (aby sa rameno nepretiahlo cez šasi pri sklápani)
-    targets_step2 = {
-        ELBOW_CHANNEL: default_angles[ELBOW_CHANNEL],
-        WRIST_CHANNEL: default_angles[WRIST_CHANNEL]
-    }
-    moving = True
-    while moving:
-        moving = False
-        for ch, target in targets_step2.items():
-            curr = current_angles.get(ch, target)
-            if int(curr) != target:
-                curr += 1 if curr < target else -1
-                move_servo(ch, curr)
-                moving = True
-        if moving: time.sleep(0.01)
-        
-    # Krok 3: Sklopiť celé rameno dozadu na chrbát (Shoulder)
+    # Krok 2: Najprv zdvihnúť celé rameno v ramennom kĺbe dozadu (aby pri vyrovnávaní lakťa neškrtlo zem)
     target_s = default_angles[SHOULDER_A]
     curr_s = current_angles.get(SHOULDER_A, target_s)
     while int(curr_s) != target_s:
         curr_s += 1 if curr_s < target_s else -1
         move_shoulder(curr_s)
         time.sleep(0.01)
+        
+    # Krok 3: Až teraz spustiť lakeť (vystrieť) a vyrovnať zápästie
+    targets_step3 = {
+        ELBOW_CHANNEL: default_angles[ELBOW_CHANNEL],
+        WRIST_CHANNEL: default_angles[WRIST_CHANNEL]
+    }
+    moving = True
+    while moving:
+        moving = False
+        for ch, target in targets_step3.items():
+            curr = current_angles.get(ch, target)
+            if int(curr) != target:
+                curr += 1 if curr < target else -1
+                move_servo(ch, curr)
+                moving = True
+        if moving: time.sleep(0.01)
         
     # Krok 4: Uvoľnenie serv pre voľnú jazdu a šetrenie energie
     release_servos()
