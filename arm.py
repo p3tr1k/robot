@@ -248,54 +248,53 @@ def cam_down():
     move_servo(TILT_CHANNEL, curr + STEP)
     schedule_camera_release()
 
+def cam_center():
+    move_servo(PAN_CHANNEL, default_angles[PAN_CHANNEL])
+    move_servo(TILT_CHANNEL, default_angles[TILT_CHANNEL])
+    schedule_camera_release()
+
 def park_arm():
     """
-    Pomaly zaparkuje rameno, lakeť a zápästie do oddychovej polohy pred vypnutím.
+    Postupne a bezpečne zaparkuje rameno na chrbát a následne uvoľní servá.
     """
     import time
-    logger.info("Parkujem celé rameno do oddychovej polohy...")
+    logger.info("Začínam parkovaciu sekvenciu...")
     
-    targets = {
-        SHOULDER_A: default_angles[SHOULDER_A],
+    # Krok 1: Vycentrovať základňu (zamedzí bočným kolíziám)
+    target_rot = default_angles[ROTATE_CHANNEL]
+    curr_rot = current_angles.get(ROTATE_CHANNEL, target_rot)
+    while int(curr_rot) != target_rot:
+        curr_rot += 1 if curr_rot < target_rot else -1
+        move_servo(ROTATE_CHANNEL, curr_rot)
+        time.sleep(0.01)
+        
+    # Krok 2: Vystrieť lakeť a zápästie nahor (aby sa rameno nepretiahlo cez šasi pri sklápani)
+    targets_step2 = {
         ELBOW_CHANNEL: default_angles[ELBOW_CHANNEL],
         WRIST_CHANNEL: default_angles[WRIST_CHANNEL]
     }
-    
     moving = True
     while moving:
         moving = False
+        for ch, target in targets_step2.items():
+            curr = current_angles.get(ch, target)
+            if int(curr) != target:
+                curr += 1 if curr < target else -1
+                move_servo(ch, curr)
+                moving = True
+        if moving: time.sleep(0.01)
         
-        # Rameno (Shoulder)
-        curr_s = current_angles.get(SHOULDER_A, targets[SHOULDER_A])
-        if int(curr_s) < targets[SHOULDER_A]:
-            move_shoulder(curr_s + 1)
-            moving = True
-        elif int(curr_s) > targets[SHOULDER_A]:
-            move_shoulder(curr_s - 1)
-            moving = True
-            
-        # Lakeť (Elbow)
-        curr_e = current_angles.get(ELBOW_CHANNEL, targets[ELBOW_CHANNEL])
-        if int(curr_e) < targets[ELBOW_CHANNEL]:
-            move_servo(ELBOW_CHANNEL, curr_e + 1)
-            moving = True
-        elif int(curr_e) > targets[ELBOW_CHANNEL]:
-            move_servo(ELBOW_CHANNEL, curr_e - 1)
-            moving = True
-            
-        # Zápästie (Wrist)
-        curr_w = current_angles.get(WRIST_CHANNEL, targets[WRIST_CHANNEL])
-        if int(curr_w) < targets[WRIST_CHANNEL]:
-            move_servo(WRIST_CHANNEL, curr_w + 1)
-            moving = True
-        elif int(curr_w) > targets[WRIST_CHANNEL]:
-            move_servo(WRIST_CHANNEL, curr_w - 1)
-            moving = True
-            
-        if moving:
-            time.sleep(0.02)
-            
-    logger.info("Rameno úspešne zaparkované.")
+    # Krok 3: Sklopiť celé rameno dozadu na chrbát (Shoulder)
+    target_s = default_angles[SHOULDER_A]
+    curr_s = current_angles.get(SHOULDER_A, target_s)
+    while int(curr_s) != target_s:
+        curr_s += 1 if curr_s < target_s else -1
+        move_shoulder(curr_s)
+        time.sleep(0.01)
+        
+    # Krok 4: Uvoľnenie serv pre voľnú jazdu a šetrenie energie
+    release_servos()
+    logger.info("Rameno úspešne zaparkované na chrbte.")
 
 def cleanup():
     # park_arm() # Nateraz ZAKÁZANÉ. Spôsobuje mechanické kolízie pri vypínaní.

@@ -242,6 +242,7 @@
                 <div class="pad-label">Kamera</div>
                 <button class="d-btn up action-btn" data-action="cam_up">▲</button>
                 <button class="d-btn left action-btn" data-action="cam_left">◀</button>
+                <button class="d-btn action-btn" data-action="cam_center" style="grid-column: 2; grid-row: 2; font-size: 14px; border-radius: 50%;">◉</button>
                 <button class="d-btn right action-btn" data-action="cam_right">▶</button>
                 <button class="d-btn down action-btn" data-action="cam_down">▼</button>
             </div>
@@ -258,7 +259,10 @@
 
         <!-- Pravý palec: Rameno -->
         <div class="panel right-panel">
-            <button class="release-btn" onclick="releaseServos()">⚠️ Uvoľniť Servá</button>
+            <div style="display: flex; gap: 10px; margin-bottom: 8px;">
+                <button class="release-btn park-btn" onclick="parkArm()" style="background: rgba(40, 150, 255, 0.2); color: #55aaff; border-color: rgba(40, 150, 255, 0.4); margin-bottom: 0;">🅿️ Parkovať</button>
+                <button class="release-btn" onclick="releaseServos()" style="margin-bottom: 0;">⚠️ Uvoľniť</button>
+            </div>
             <div class="arm-grid">
                 
                 <div class="arm-row-title">Základňa (Base)</div>
@@ -343,6 +347,25 @@
             // Blokovanie menu pri dlhom podržaní na mobile
             btn.addEventListener('contextmenu', e => e.preventDefault());
         });
+
+        // Samostatná funkcia pre parkovanie
+        function parkArm() {
+            const btn = document.querySelector('.park-btn');
+            const originalText = btn.innerText;
+            btn.innerText = "Parkujem...";
+            
+            fetch('/command/park_arm', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    btn.innerText = "Zaparkované!";
+                    setTimeout(() => btn.innerText = originalText, 1500);
+                })
+                .catch(error => {
+                    console.error('Chyba:', error);
+                    btn.innerText = "Chyba!";
+                    setTimeout(() => btn.innerText = originalText, 1500);
+                });
+        }
 
         // Samostatná funkcia pre uvoľnenie serv
         function releaseServos() {

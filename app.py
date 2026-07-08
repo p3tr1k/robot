@@ -188,7 +188,8 @@ def handle_command(action):
             'wrist_up': arm.wrist_up, 'wrist_down': arm.wrist_down,
             'grip_open': arm.grip_open, 'grip_close': arm.grip_close,
             'cam_up': arm.cam_up, 'cam_down': arm.cam_down,
-            'cam_left': arm.cam_left, 'cam_right': arm.cam_right
+            'cam_left': arm.cam_left, 'cam_right': arm.cam_right,
+            'cam_center': arm.cam_center, 'park_arm': arm.park_arm
         }
 
         if action in motor_commands:
