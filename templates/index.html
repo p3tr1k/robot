@@ -19,7 +19,7 @@
 
         body, html {
             width: 100vw;
-            height: 100vh;
+            height: 100dvh; /* 100dvh rešpektuje UI mobilného prehliadača */
             overflow: hidden; /* Zákaz scrollovania */
             background-color: #0c0c0c;
             font-family: 'Inter', sans-serif;
@@ -35,7 +35,7 @@
             top: 0;
             left: 0;
             width: 100vw;
-            height: 100vh;
+            height: 100dvh;
             /* Použijeme contain, aby kamera nebola orezaná, okraje budú čierne a prekryté sklom */
             object-fit: contain; 
             z-index: 1;
@@ -48,7 +48,7 @@
             top: 0;
             left: 0;
             width: 100vw;
-            height: 100vh;
+            height: 100dvh;
             z-index: 2;
             display: flex;
             justify-content: space-between;
@@ -68,6 +68,7 @@
         .left-panel {
             align-items: center;
             gap: 20px;
+            margin-bottom: 100px; /* Posunutie celej ľavej časti nahor */
         }
 
         /* D-Pad Štýl */
@@ -144,29 +145,31 @@
             background: rgba(30, 30, 30, 0.4);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
-            padding: 10px 12px; /* Zmenšený padding */
+            padding: 8px 10px; /* Ešte menší padding */
             border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            max-height: 95vh;
+            max-height: 98dvh;
             overflow-y: auto; /* Ak by bol displej primalý */
+            transform: scale(0.9); /* Pre istotu mierne zmenšenie celého panelu, aby sa bezpečne zmestil */
+            transform-origin: right center;
         }
 
         .arm-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 6px 8px; /* Zmenšené medzery */
+            gap: 4px 6px; /* Zmenšené medzery */
             align-items: center;
         }
 
         .arm-row-title {
             grid-column: span 2;
             color: rgba(255,255,255,0.5);
-            font-size: 10px; /* Zmenšený font nadpisov */
+            font-size: 9px; /* Zmenšený font nadpisov */
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: -3px;
-            margin-top: 4px;
+            margin-bottom: -2px;
+            margin-top: 2px;
             text-align: center;
             font-weight: 600;
         }
@@ -174,10 +177,10 @@
         .arm-btn {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 10px;
+            border-radius: 8px;
             color: white;
-            padding: 10px 5px; /* Výrazne zmenšený padding (výška) */
-            font-size: 16px; /* Zväčšený font pre samotné EMOJI */
+            padding: 8px 4px; /* Ešte viac zmenšený padding */
+            font-size: 16px; 
             font-weight: 600;
             transition: all 0.05s ease-out;
             display: flex;
@@ -199,17 +202,20 @@
             background: rgba(255, 40, 40, 0.2);
             color: #ff5555;
             border: 1px solid rgba(255, 40, 40, 0.4);
-            padding: 8px 10px; /* Zmenšené z 10x15 */
-            border-radius: 10px;
-            font-size: 11px; /* Zmenšené z 13 */
+            padding: 6px 6px; /* Štvorcové zmenšené */
+            border-radius: 8px;
+            font-size: 16px; /* Písmo pre emoji vnútri */
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 1px;
             box-shadow: 0 4px 15px rgba(255,0,0,0.1);
             transition: all 0.2s;
             cursor: pointer;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .release-btn:active {
@@ -259,9 +265,9 @@
 
         <!-- Pravý palec: Rameno -->
         <div class="panel right-panel">
-            <div style="display: flex; gap: 10px; margin-bottom: 8px;">
-                <button class="release-btn park-btn" onclick="parkArm()" style="background: rgba(40, 150, 255, 0.2); color: #55aaff; border-color: rgba(40, 150, 255, 0.4); margin-bottom: 0;">🅿️ Parkovať</button>
-                <button class="release-btn" onclick="releaseServos()" style="margin-bottom: 0;">⚠️ Uvoľniť</button>
+            <div style="display: flex; gap: 6px; margin-bottom: 4px;">
+                <button class="release-btn park-btn" onclick="parkArm()" style="background: rgba(40, 150, 255, 0.2); color: #55aaff; border-color: rgba(40, 150, 255, 0.4); margin-bottom: 0;" title="Parkovať">🅿️</button>
+                <button class="release-btn" onclick="releaseServos()" style="margin-bottom: 0;" title="Uvoľniť">⚠️</button>
             </div>
             <div class="arm-grid">
                 
@@ -352,36 +358,37 @@
         function parkArm() {
             const btn = document.querySelector('.park-btn');
             const originalText = btn.innerText;
-            btn.innerText = "Parkujem...";
+            btn.innerText = "⏳";
             
             fetch('/command/park_arm', { method: 'POST' })
                 .then(response => response.json())
                 .then(data => {
-                    btn.innerText = "Zaparkované!";
+                    btn.innerText = "✅";
                     setTimeout(() => btn.innerText = originalText, 1500);
                 })
                 .catch(error => {
                     console.error('Chyba:', error);
-                    btn.innerText = "Chyba!";
+                    btn.innerText = "❌";
                     setTimeout(() => btn.innerText = originalText, 1500);
                 });
         }
 
         // Samostatná funkcia pre uvoľnenie serv
         function releaseServos() {
-            const btn = document.querySelector('.release-btn');
-            btn.innerText = "Uvoľňujem...";
+            const btn = document.querySelectorAll('.release-btn')[1]; // Druhé tlačidlo v poradí
+            const originalText = btn.innerText;
+            btn.innerText = "⏳";
             
             fetch('/release_servos', { method: 'POST' })
                 .then(response => response.json())
                 .then(data => {
-                    btn.innerText = "Uvoľnené!";
-                    setTimeout(() => btn.innerText = "⚠️ Uvoľniť Servá", 1500);
+                    btn.innerText = "✅";
+                    setTimeout(() => btn.innerText = originalText, 1500);
                 })
                 .catch(error => {
                     console.error('Chyba:', error);
-                    btn.innerText = "Chyba!";
-                    setTimeout(() => btn.innerText = "⚠️ Uvoľniť Servá", 1500);
+                    btn.innerText = "❌";
+                    setTimeout(() => btn.innerText = originalText, 1500);
                 });
         }
     </script>
