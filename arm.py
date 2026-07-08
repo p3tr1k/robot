@@ -54,7 +54,7 @@ ELBOW_SAFE_MIN = 30 # Upraviteľný limit, aby lakeť neschádzal príliš dole
 ELBOW_SAFE_MAX = 180
 
 # Špecifické limity pre Rotáciu základne (aby nenarážalo do kamery na chrbte)
-ROTATE_SAFE_MIN = 75 # Skrátené o 20 stupňov doľava
+ROTATE_SAFE_MIN = 90 # Ešte viac skrátené o 15 stupňov doľava (na 90)
 ROTATE_SAFE_MAX = 155 # Posunuté o 10 stupňov doprava
 
 # Predvolené (stredové/oddychové) uhly
