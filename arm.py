@@ -46,7 +46,7 @@ SAFE_MAX = 180 # Odomknuté na absolútne maximum
 # Špecifické limity pre Gripper (aby sa nezasekával v extrémoch a vládal sa vrátiť)
 # Obmedzené na 80 stupňov dráhy, pretože väčšina 3D tlačených mechanizmov sa pri viac ako 90° prevráti cez mŕtvy bod
 GRIP_SAFE_MIN = 80 
-GRIP_SAFE_MAX = 150 # Zvýšené zo 140 na 150 pre pevnejšie zovretie
+GRIP_SAFE_MAX = 145 # Znížené zo 150 na 145 (zatváralo sa až príliš)
 
 # Špecifické limity pre Lakeť (aby pri down pohybe netlačil do samotného ramena)
 # 180 je horná (vystretá) poloha. Dolnú polohu obmedzíme, aby neschádzal príliš nízko.
@@ -187,24 +187,23 @@ def _auto_release_gripper():
     except Exception as e:
         logger.error(f"Chyba pri automatickom uvoľňovaní grippera: {e}")
 
-def schedule_gripper_release():
+def schedule_gripper_release(delay=0.5):
     global grip_timer
     if grip_timer:
         grip_timer.cancel()
-    # Nastavíme časovač na 0.5 sekundy. Kým užívateľ drží tlačidlo, časovač sa neustále posúva.
-    # Až keď tlačidlo pustí, ubehne 0.5s a servo sa uvoľní.
-    grip_timer = threading.Timer(0.5, _auto_release_gripper)
+    # Časovač sa nastaví podľa parametra. 
+    grip_timer = threading.Timer(delay, _auto_release_gripper)
     grip_timer.start()
 
 def grip_open():
     # Na tvrdo skok pre maximálny krútiaci moment, obmedzený na bezpečný limit 80, aby sa neprevrátil mechanizmus
     move_servo(GRIP_CHANNEL, GRIP_SAFE_MIN)
-    schedule_gripper_release()
+    schedule_gripper_release(0.5) # Rýchle uvoľnenie po otvorení
 
 def grip_close():
     # Na tvrdo skok do zatvorenej polohy s maximálnou silou
     move_servo(GRIP_CHANNEL, GRIP_SAFE_MAX)
-    schedule_gripper_release()
+    schedule_gripper_release(10.0) # Drží pozíciu 10 sekúnd po pustení tlačidla, aby udržal predmet
 
 cam_timer = None
 
